@@ -3,11 +3,13 @@
 
 export type CommissionStatus = "pendente" | "liberada" | "paga" | "contestada";
 
+import type { CommissionRule } from "@/lib/comissao";
+
 export type Offer = {
   id: string;
   name: string;
   description: string;
-  commissionLabel: string;
+  rule: CommissionRule;
   graceDays: number;
   active: boolean;
   referrals: number;
@@ -43,7 +45,7 @@ export const offers: Offer[] = [
     name: "Envidraçamento de sacada",
     description:
       "Cortina de vidro para fechar a sacada do apartamento, com medição e instalação inclusas.",
-    commissionLabel: "R$ 300,00 fixo por venda fechada",
+    rule: { fixedCents: 30000, percentBps: null, capCents: null },
     graceDays: 30,
     active: true,
     referrals: 64,
@@ -53,7 +55,7 @@ export const offers: Offer[] = [
     id: "o2",
     name: "Box de banheiro",
     description: "Box em vidro temperado sob medida, com instalação.",
-    commissionLabel: "R$ 100,00 fixo por venda fechada",
+    rule: { fixedCents: 10000, percentBps: null, capCents: null },
     graceDays: 15,
     active: true,
     referrals: 142,
@@ -63,7 +65,7 @@ export const offers: Offer[] = [
     id: "o3",
     name: "Guarda-corpo de vidro",
     description: "Guarda-corpo para escadas, sacadas e terraços, com instalação.",
-    commissionLabel: "R$ 200,00 fixo por venda fechada",
+    rule: { fixedCents: 10000, percentBps: 100, capCents: 60000 },
     graceDays: 30,
     active: true,
     referrals: 38,
@@ -73,7 +75,7 @@ export const offers: Offer[] = [
     id: "o4",
     name: "Campanha de verão (encerrada)",
     description: "Condição especial de box e espelhos, encerrada em março.",
-    commissionLabel: "R$ 100,00 fixo",
+    rule: { fixedCents: 10000, percentBps: null, capCents: null },
     graceDays: 15,
     active: false,
     referrals: 27,
