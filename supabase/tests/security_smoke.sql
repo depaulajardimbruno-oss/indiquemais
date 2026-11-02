@@ -21,6 +21,9 @@ insert into auth.users (id,email,raw_user_meta_data) values
 update public.profiles set phone='(19) 90000-1234', pix_key='marina@x.com', pix_key_type='email' where id='00000000-0000-0000-0000-0000000000b1';
 insert into public.platform_admins values ('00000000-0000-0000-0000-00000000000a');
 insert into public.companies (id,name) values ('c0000000-0000-0000-0000-000000000001','Soulglass'),('c0000000-0000-0000-0000-000000000002','Casa Nova');
+-- Soulglass usa o plano sem limites neste teste (os limites têm teste próprio em plans_seals.sql)
+update public.company_plan_history set ends_at = now() where company_id='c0000000-0000-0000-0000-000000000001' and ends_at is null;
+insert into public.company_plan_history (company_id, plan_code, platform_fee_bps) values ('c0000000-0000-0000-0000-000000000001','avancado_mais',50);
 insert into public.company_members values ('c0000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-0000000000a1','admin'),('c0000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-0000000000a2','admin');
 insert into public.offers (id,company_id,name,commission_fixed_cents,commission_percent_bps,commission_cap_cents,grace_days) values
  ('0f000000-0000-0000-0000-000000000001','c0000000-0000-0000-0000-000000000001','Sacada',30000,null,null,0),

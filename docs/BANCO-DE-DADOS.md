@@ -61,13 +61,41 @@ e chama funções que validam a regra: `company_set_referral_stage`, `indicator_
 `paga` (Indiki+ paga no último dia do mês) → `confirmada` (indicador confirma) ou `contestada`
 (Indiki+ resolve e volta para `paga`, ou `cancelada`). Indicação perdida cancela a comissão pendente.
 
+## Regra de comissão e contrato (migração 4)
+Cada produto define `commission_fixed_cents`, `commission_percent_bps` e, opcionalmente, `commission_cap_cents` (teto).
+Comissão = fixo + (percentual × **valor total do contrato**), limitada ao teto (`calc_commission`).
+Ao marcar "fechou" a empresa informa **valor e número do contrato** (único por empresa). O valor da comissão fica
+congelado; só pode ser corrigido com motivo (`company_correct_sale`) enquanto estiver `pendente`.
+
+## Cadastro de indicadores (migração 3)
+A empresa cadastra o indicador (nome, e-mail, telefone) e o sistema gera **código e link**. O amigo pode usar o link/código
+ou declarar nome e telefone do indicador (vincula pelo telefone, depois pelo nome único); o indicador precisa confirmar
+antes da venda fechar.
+
+## Planos e selos (migração 5) — tudo por parâmetros
+| Tabela | O que guarda |
+|---|---|
+| `plans` | Planos: `inicial`, `intermediario`, `avancado`, `avancado_mais`. Preço (vazio = a definir), taxa, limites (indicadores, produtos, usuários; vazio = ilimitado), nível de relatório, integração CRM, destaque, suporte, `active` |
+| `company_plan_history` | Qual plano cada empresa teve e quando, com a taxa daquele momento. Só o fim do período muda |
+| `seal_criteria` | O que conta pontos (vendas com contrato, indicadores que confirmaram, contestações, tempo de casa, taxa em dia): peso, teto de pontos, `active` |
+| `seal_levels` | Bronze, Prata, Ouro, Platina, Diamante: pontos mínimos, vendas mínimas, `active` (nível desativado é pulado) |
+| `company_seals` | Registro do selo ao longo do tempo (só cresce), com "desde quando" |
+
+- **Mudar valores = mudar dados.** O administrador usa `admin_save_plan`, `admin_save_seal_level`, `admin_save_seal_criterion`;
+  nada precisa de deploy. Novos critérios exigem uma medição nova em `company_seal_metrics`.
+- **Limites travados no banco** (gatilho `enforce_plan_limit`): passar do limite do plano falha mesmo que alguém mexa na tela.
+  Rebaixar de plano só é permitido se a empresa já couber no plano menor.
+- **Selo é mérito, não se compra.** Recalculado por `admin_recalculate_seals` (agendar diariamente quando houver rotina).
+  Verificação pública: visão `public_company_seals` (só nome, nível e desde quando).
+- Valores iniciais (pontos, limites, taxas 1% / 0,8% / 0,6% / 0,5%) são **propostas** e podem ser alterados a qualquer momento.
+
 ## Taxa do Indiki+
-`companies.platform_fee_bps` (100 = 1%) sobre o valor das vendas já fechadas. Por isso o valor da venda
-é obrigatório ao marcar "fechou". A visão `company_platform_fees` calcula o total.
+Percentual do **plano vigente no dia em que a venda fechou** (`company_plan_history`), aplicado ao valor total das vendas
+fechadas. Mudar de plano não altera vendas passadas. A visão `company_platform_fees` calcula o total.
 
 ## Decisões tomadas
 - **Um único ambiente de banco** (Supabase `indiquemais`), compartilhado por teste, homologação e produção. Como os três usam os mesmos dados, os dados de teste ficam misturados com os reais: usar empresas e indicadores de teste claramente marcados e limpar (arquivar) antes de operar com clientes reais.
-- **A empresa cadastra os próprios produtos e a regra de comissão** (fixa em reais ou porcentagem). Trava de segurança: porcentagem acima de 50% exige validação com o Indiki+.
+- **A empresa cadastra os próprios produtos e a regra de comissão** (fixa, % do contrato ou os dois, com teto opcional). Trava de segurança: porcentagem acima de 50% exige validação com o Indiki+.
 
 ## Decisões em aberto
 1. **Dados pessoais (LGPD):** o telefone do amigo fica também no log de auditoria, visível só ao admin. Falta a rotina de anonimização a pedido do titular.
