@@ -14,6 +14,8 @@ export type Offer = {
   active: boolean;
   referrals: number;
   sales: number;
+  /** Versões da regra, da mais nova para a mais antiga. "open" = indicações em andamento que seguem aquela versão. */
+  history: { version: number; rule: CommissionRule; graceDays: number; from: string; open: number }[];
 };
 
 export type Sale = {
@@ -50,6 +52,7 @@ export const offers: Offer[] = [
     active: true,
     referrals: 64,
     sales: 6,
+    history: [{ version: 2, rule: { fixedCents: 30000, percentBps: null, capCents: null }, graceDays: 30, from: "2026-09-15", open: 4 }, { version: 1, rule: { fixedCents: 25000, percentBps: null, capCents: null }, graceDays: 30, from: "2026-03-02", open: 1 }],
   },
   {
     id: "o2",
@@ -60,6 +63,7 @@ export const offers: Offer[] = [
     active: true,
     referrals: 142,
     sales: 19,
+    history: [{ version: 1, rule: { fixedCents: 10000, percentBps: null, capCents: null }, graceDays: 15, from: "2026-03-02", open: 7 }],
   },
   {
     id: "o3",
@@ -70,6 +74,7 @@ export const offers: Offer[] = [
     active: true,
     referrals: 38,
     sales: 5,
+    history: [{ version: 1, rule: { fixedCents: 10000, percentBps: 100, capCents: 60000 }, graceDays: 30, from: "2026-05-10", open: 3 }],
   },
   {
     id: "o4",
@@ -80,6 +85,7 @@ export const offers: Offer[] = [
     active: false,
     referrals: 27,
     sales: 4,
+    history: [{ version: 1, rule: { fixedCents: 10000, percentBps: null, capCents: null }, graceDays: 15, from: "2026-01-12", open: 0 }],
   },
 ];
 

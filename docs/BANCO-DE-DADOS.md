@@ -143,3 +143,13 @@ fechadas. Mudar de plano não altera vendas passadas. A visão `company_platform
 ## Decisões em aberto
 1. **Dados pessoais (LGPD):** o telefone do amigo fica também no log de auditoria, visível só ao admin. Falta a rotina de anonimização a pedido do titular.
 2. **Quem é o primeiro administrador da plataforma** (cadastrar em `platform_admins`).
+
+## Migração 9: regra de comissão congelada na indicação
+
+- A empresa pode editar a comissão do produto a qualquer momento. A mudança vale só para indicações **criadas depois**.
+- Cada mudança de regra do produto gera uma linha em `offer_rule_versions` (só cresce; gatilho no próprio `offers`, então vale até para o SQL Editor).
+- `referrals.rule_*` guarda a regra (fixo, %, teto, carência) no instante em que a indicação nasce. Um gatilho bloqueia qualquer alteração dessas colunas.
+- Fechar venda e corrigir o valor do contrato calculam pela regra da indicação (`calc_commission_ref`), nunca pela regra atual do produto. A carência de liberação também vem da indicação.
+- Exceção: `admin_correct_referral_rule` (só admin do Indiki+, motivo obrigatório, só antes de a comissão ser liberada, com auditoria `CORRECAO_REGRA`).
+- Tela da empresa lê `company_offer_rule_history` (versões, quantas indicações cada uma tem e quantas estão em andamento).
+- Testes: `supabase/tests/rule_snapshot.sql`.

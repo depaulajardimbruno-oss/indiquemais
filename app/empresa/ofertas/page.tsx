@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 import { Card, PageHeader } from "@/components/ui";
 import { offers } from "@/lib/mock";
 import { describeRule } from "@/lib/comissao";
@@ -51,6 +51,12 @@ export default function OfertasPage() {
                 </dd>
               </div>
             </dl>
+            <div className="mt-4 flex items-center justify-between gap-3 border-t border-line pt-3 text-sm">
+              <span className="text-muted">Regra na versão {o.history[0].version}{o.history.length > 1 ? `, ${o.history.length - 1} anterior${o.history.length > 2 ? "es" : ""}` : ""}</span>
+              <Link href={`/empresa/ofertas/${o.id}/editar`} className="inline-flex items-center gap-1 font-medium text-brand underline">
+                <Pencil size={14} aria-hidden /> Editar
+              </Link>
+            </div>
           </Card>
         ))}
       </div>
