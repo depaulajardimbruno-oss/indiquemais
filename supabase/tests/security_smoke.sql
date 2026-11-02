@@ -26,10 +26,10 @@ insert into public.offers (id,company_id,name,commission_type,commission_value,g
  ('0f000000-0000-0000-0000-000000000001','c0000000-0000-0000-0000-000000000001','Sacada','fixed',30000,0),
  ('0f000000-0000-0000-0000-000000000002','c0000000-0000-0000-0000-000000000001','Box','percent',500,0),
  ('0f000000-0000-0000-0000-000000000003','c0000000-0000-0000-0000-000000000002','Pintura','fixed',5000,30);
-insert into public.referrer_links (id,company_id,user_id,code,customer_since) values
- ('10000000-0000-0000-0000-000000000001','c0000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-0000000000b1','MARINA7K','2026-09-01'),
- ('10000000-0000-0000-0000-000000000002','c0000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-0000000000b1','MARINA-CN4','2026-07-01'),
- ('10000000-0000-0000-0000-000000000003','c0000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-0000000000b2','RAFAEL3Q','2026-08-01');
+insert into public.referrer_links (id,company_id,user_id,code,customer_since,full_name,email,phone,phone_digits) values
+ ('10000000-0000-0000-0000-000000000001','c0000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-0000000000b1','MARINA7K','2026-09-01','Marina Souza','marina@x.com','(19) 90000-1234','19900001234'),
+ ('10000000-0000-0000-0000-000000000002','c0000000-0000-0000-0000-000000000002','00000000-0000-0000-0000-0000000000b1','MARINA-CN4','2026-07-01','Marina Souza','marina@x.com','(19) 90000-1234','19900001234'),
+ ('10000000-0000-0000-0000-000000000003','c0000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-0000000000b2','RAFAEL3Q','2026-08-01','Rafael Lima','rafael@x.com','(19) 91111-2222','19911112222');
 
 \echo === 1. Visitante sem login
 set role anon;
@@ -161,4 +161,61 @@ select 'comissão antiga continua 30000: ' || amount_cents from public.company_c
 reset role;
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000b1',false); set role authenticated;
 select pg_temp.expect_fail('indicador cadastra produto', $$select public.company_save_offer('c0000000-0000-0000-0000-000000000001', null, 'Q', null, 'fixed', 100)$$);
+reset role;
+
+\echo === 12. Cadastro manual de indicador pela empresa
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a1',false); set role authenticated;
+select 'código gerado para Pedro: ' || public.company_register_indicator('c0000000-0000-0000-0000-000000000001','Pedro Álvares','Pedro@Email.com','(11) 98765-4321','2026-10-01');
+select pg_temp.expect_fail('cadastro duplicado (mesmo e-mail)', $$select public.company_register_indicator('c0000000-0000-0000-0000-000000000001','Outro Pedro','pedro@email.com',null)$$);
+select pg_temp.expect_fail('cadastro duplicado (mesmo telefone)', $$select public.company_register_indicator('c0000000-0000-0000-0000-000000000001','Outro','outro@email.com','11 98765-4321')$$);
+select pg_temp.expect_fail('sem e-mail nem telefone', $$select public.company_register_indicator('c0000000-0000-0000-0000-000000000001','Sem Contato')$$);
+select pg_temp.expect_fail('e-mail inválido', $$select public.company_register_indicator('c0000000-0000-0000-0000-000000000001','Fulano','isso-nao-e-email')$$);
+select pg_temp.expect_fail('cadastrar em outra empresa', $$select public.company_register_indicator('c0000000-0000-0000-0000-000000000002','Fulano','f@x.com')$$);
+select public.company_register_indicator('c0000000-0000-0000-0000-000000000001','Ana Lima',null,'(21) 97777-0001');
+select public.company_register_indicator('c0000000-0000-0000-0000-000000000001','Ana Lima',null,'(21) 97777-0002');
+select 'indicadores da Soulglass (esperado 5): ' || count(*) from public.company_indicators;
+select 'Pedro ainda sem conta: ' || (not has_account) from public.company_indicators where full_name like 'Pedro%';
+reset role;
+
+\echo --- Pedro entra pela primeira vez (e-mail confirmado)
+insert into auth.users (id,email,email_confirmed_at,raw_user_meta_data) values ('00000000-0000-0000-0000-0000000000b3','pedro@email.com',now(),'{}');
+select 'Pedro ligado ao cadastro: ' || (user_id is not null) from public.referrer_links where email='pedro@email.com';
+select 'perfil de Pedro usa o nome da empresa: ' || full_name || ' / ' || coalesce(phone,'-') from public.profiles where id='00000000-0000-0000-0000-0000000000b3';
+insert into auth.users (id,email,email_confirmed_at) values ('00000000-0000-0000-0000-0000000000b4','estranho@x.com',now());
+select 'estranho não ganhou link (esperado 0): ' || count(*) from public.referrer_links where user_id='00000000-0000-0000-0000-0000000000b4';
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000b3',false); set role authenticated;
+select 'Pedro vê seus links: ' || count(*) || ' (' || string_agg(company_name || ' ' || left(code,6), ',') || ')' from public.indicator_links;
+reset role;
+
+\echo --- Amigo diz o nome/telefone de quem indicou
+create temp table lk as select (select code from public.referrer_links where email='pedro@email.com') as pedro_code, (select id from public.referrer_links where phone_digits='21977770001') as ana1;
+grant select on lk to public;
+set role anon;
+select 'por telefone com máscara diferente: ' || public.submit_quote_request('Teste Tel','1','0f000000-0000-0000-0000-000000000001', true,'v1', null,'c0000000-0000-0000-0000-000000000001', null, '11 98765 4321');
+select 'por nome exato: ' || public.submit_quote_request('Teste Nome','1','0f000000-0000-0000-0000-000000000001', true,'v1', null,'c0000000-0000-0000-0000-000000000001', 'pedro álvares', null);
+select 'nome repetido (Ana Lima x2) não adivinha: ' || public.submit_quote_request('Teste Ana','1','0f000000-0000-0000-0000-000000000001', true,'v1', null,'c0000000-0000-0000-0000-000000000001', 'Ana Lima', null);
+select 'código com letras minúsculas: ' || (public.submit_quote_request('Teste Cod','1','0f000000-0000-0000-0000-000000000001', true,'v1', (select lower(pedro_code) from lk), null) is not null);
+reset role;
+select 'achados pelo sistema (esperado 2 com link; 1 sem link): ' || count(*) filter (where link_id is not null) || ' / ' || count(*) filter (where link_id is null) from public.referrals where friend_name in ('Teste Tel','Teste Nome','Teste Ana');
+
+\echo --- Empresa vincula manualmente e o indicador precisa confirmar
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a1',false); set role authenticated;
+select 'Ana sem vínculo aparece como não encontrada: ' || referrer_not_found from public.company_referrals where friend_name='Teste Ana';
+select public.company_link_declared_referrer((select id from public.referrals where friend_name='Teste Ana'), (select ana1 from lk));
+select public.company_set_referral_stage((select id from public.referrals where friend_name='Teste Nome'),'orcamento');
+select pg_temp.expect_fail('fechar sem o indicador confirmar', format($$select public.company_set_referral_stage(%L,'fechou',500000)$$, (select id from public.referrals where friend_name='Teste Nome')));
+select 'aguardando confirmação: ' || awaiting_referrer_confirmation from public.company_referrals where friend_name='Teste Nome';
+reset role;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000b3',false); set role authenticated;
+select 'Pedro vê pendências (esperado 2: Tel e Nome): ' || count(*) from public.indicator_pending_declarations;
+select public.indicator_answer_declared((select id from public.indicator_pending_declarations where friend='Teste N.' or friend like 'Teste Nome%' limit 1), true);
+reset role;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a1',false); set role authenticated;
+select public.company_set_referral_stage((select id from public.referrals where friend_name='Teste Nome'),'fechou',500000);
+select 'agora fechou: comissão = ' || amount_cents from public.company_commissions where referral_id=(select id from public.referrals where friend_name='Teste Nome');
+reset role;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000b3',false); set role authenticated;
+select 'Pedro recusa a outra pendência: ' ; 
+select public.indicator_answer_declared((select id from public.indicator_pending_declarations limit 1), false);
+select 'pendências restantes (esperado 0): ' || count(*) from public.indicator_pending_declarations;
 reset role;
