@@ -89,6 +89,38 @@ antes da venda fechar.
   Verificação pública: visão `public_company_seals` (só nome, nível e desde quando).
 - Valores iniciais (pontos, limites, taxas 1% / 0,8% / 0,6% / 0,5%) são **propostas** e podem ser alterados a qualquer momento.
 
+## Grupos de cliente, certificados e ranking (migração 6)
+- **Grupos** (`customer_groups`): perfil da empresa (autônomo, pequena, média, grande) com **plano sugerido**. A empresa recebe um grupo
+  (`admin_set_company_group`) e a visão `company_group_plan` mostra o plano atual contra o sugerido.
+- **Certificados do selo** (`seal_certificates`): quando a empresa tem selo, recebe um certificado com **código público** (`IM-XXXX-XXXX`).
+  Subiu ou desceu de nível: o certificado antigo é revogado e um novo é emitido. Validade em `platform_settings` (365 dias).
+  Qualquer pessoa confere o código na função pública `verify_certificate` (valido, expirado, revogado, desatualizado, inexistente);
+  não existe forma de listar certificados. O selo no site do parceiro carrega dessa verificação.
+- **Ranking de indicadores**: `referrer_criteria` (pontos), `referrer_tiers` (níveis, nomes provisórios "Nível 1..5") e
+  `referrer_benefits` (benefícios por nível). Pontuação soma todas as empresas em que a pessoa indicou. O indicador vê sua posição e o que
+  falta para o próximo nível; o placar geral só mostra o nome de quem **aceitou aparecer** (padrão: anônimo, por causa da LGPD).
+
+## Cobrança, recibos e fiscal (migração 7)
+- **Faturas** (`invoices`, `invoice_items`): mensalidade do plano e taxa sobre vendas (uma linha por venda, cobrada uma única vez, com a taxa do
+  plano vigente no dia do fechamento). Gerar duas vezes não duplica. Valor e identificação nunca mudam; fatura paga não volta atrás;
+  cancelar exige motivo e libera a venda para ser cobrada de novo. Numeração sequencial sem buracos (`F-2026-000001`).
+- **Pagamento e recibo**: `admin_record_payment` registra o pagamento (Pix, boleto, cartão, transferência) e **emite o recibo na hora**
+  (`R-2026-000001`), com quem pagou, quem recebeu, valor e forma. Recibo e pagamento são somente-inserção. O recibo avisa que **não substitui
+  a nota fiscal**; o número da NFS-e é anexado à fatura (`admin_set_fiscal_note`).
+- **Quem paga e vê**: a empresa vê suas faturas, recibos e o total pago por ano; o administrador tem o painel `admin_billing_overview`
+  (emitido, recebido, em aberto, vencido).
+- **Pagamento de comissão** (`commission_payments`): cada comissão paga ao indicador registra bruto, retenções e líquido.
+  **Regras de retenção** (`tax_rules`) nascem **desativadas e zeradas**; o contador define as alíquotas.
+  A opção `require_cpf_for_payout` (padrão desligada) bloqueia o pagamento de quem não tem CPF cadastrado.
+- **Dados fiscais do indicador** (`indicator_tax_profiles`): CPF validado, nome e endereço; só o próprio e o admin veem.
+- **Informe de rendimentos** (`income_statements`): por indicador e ano, **versionado** (mudou valor ou CPF, nasce a versão 2 e a 1 fica guardada).
+  O indicador vê o seu; a visão `admin_tax_pending` lista quem recebeu mas ainda não tem CPF.
+
+### O que o banco NÃO resolve (precisa de contador e advogado)
+Emissão de nota fiscal de serviço; alíquotas reais de IRRF e INSS (o imposto de renda usa tabela progressiva mensal); dados da empresa
+emissora (razão social e CNPJ ficam em `platform_settings`); envio mensal das informações à Receita (a DIRF acabou em 2025; hoje é
+eSocial e EFD-Reinf); e se o Indiki+ ficar responsável por receber das empresas e repassar aos indicadores, o enquadramento disso.
+
 ## Taxa do Indiki+
 Percentual do **plano vigente no dia em que a venda fechou** (`company_plan_history`), aplicado ao valor total das vendas
 fechadas. Mudar de plano não altera vendas passadas. A visão `company_platform_fees` calcula o total.
