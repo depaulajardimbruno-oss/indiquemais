@@ -18,14 +18,39 @@
   --color-accent: var(--accent);
   --color-surface: var(--surface);
   --color-ink: var(--ink);
-  --color-muted: color-mix(in srgb, var(--ink) 60%, white);
-  --color-line: color-mix(in srgb, var(--ink) 12%, white);
+  --color-muted: color-mix(in srgb, var(--ink) 68%, white);
+  --color-line: color-mix(in srgb, var(--ink) 14%, white);
   --radius-brand: var(--radius);
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: ui-rounded, "SF Pro Rounded", "Hiragino Maru Gothic ProN", "Segoe UI", system-ui, sans-serif;
+}
+
+/* Texto base de 18px: mais confortável para quem tem vista cansada e para telas de celular. */
+html {
+  font-size: 112.5%;
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--surface);
   color: var(--ink);
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+}
+
+/* Foco visível para quem navega pelo teclado. */
+:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
 }

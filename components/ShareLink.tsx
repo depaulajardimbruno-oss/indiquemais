@@ -34,7 +34,7 @@ export function ShareLink({ code, firstName, company }: { code: string; firstNam
       <div className="mt-3 flex flex-wrap gap-2">
         <button
           onClick={copy}
-          className="inline-flex items-center gap-2 rounded-brand bg-white px-4 py-2 text-sm font-medium text-ink hover:opacity-90"
+          className="inline-flex items-center gap-2 rounded-brand bg-white px-4 py-3 text-sm font-medium text-ink hover:opacity-90"
         >
           {copied ? <Check size={16} aria-hidden /> : <Copy size={16} aria-hidden />}
           {copied ? "Copiado" : "Copiar link"}
@@ -43,7 +43,7 @@ export function ShareLink({ code, firstName, company }: { code: string; firstNam
           href={`https://wa.me/?text=${encodeURIComponent(text)}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-brand border border-white/60 px-4 py-2 text-sm font-medium hover:bg-white/10"
+          className="inline-flex items-center gap-2 rounded-brand border border-white/60 px-4 py-3 text-sm font-medium hover:bg-white/10"
         >
           <MessageCircle size={16} aria-hidden />
           Enviar no WhatsApp

@@ -42,7 +42,7 @@ export default function EntrarPage() {
               </label>
               <button
                 type="submit"
-                className="mt-4 w-full rounded-brand bg-brand px-4 py-2 text-sm font-medium text-brand-fg hover:opacity-90"
+                className="mt-4 w-full rounded-brand bg-brand px-4 py-3 text-sm font-medium text-brand-fg hover:opacity-90"
               >
                 Enviar link de acesso
               </button>
@@ -61,7 +61,7 @@ export default function EntrarPage() {
               </p>
               <Link
                 href="/indicador"
-                className="mt-5 inline-block rounded-brand bg-brand px-4 py-2 text-sm font-medium text-brand-fg"
+                className="mt-5 inline-block rounded-brand bg-brand px-4 py-3 text-sm font-medium text-brand-fg"
               >
                 Abrir painel de exemplo
               </Link>

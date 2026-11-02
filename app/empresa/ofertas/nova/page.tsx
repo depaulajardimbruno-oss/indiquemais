@@ -23,7 +23,7 @@ export default function NovaOfertaPage() {
         </p>
         <Link
           href="/empresa/ofertas"
-          className="mt-5 inline-block rounded-brand bg-brand px-4 py-2 text-sm font-medium text-brand-fg"
+          className="mt-5 inline-block rounded-brand bg-brand px-4 py-3 text-sm font-medium text-brand-fg"
         >
           Voltar às ofertas
         </Link>

@@ -14,7 +14,7 @@ export default function OfertasPage() {
         action={
           <Link
             href="/empresa/ofertas/nova"
-            className="inline-flex items-center gap-2 rounded-brand bg-brand px-4 py-2 text-sm font-medium text-brand-fg hover:opacity-90"
+            className="inline-flex items-center gap-2 rounded-brand bg-brand px-4 py-3 text-sm font-medium text-brand-fg hover:opacity-90"
           >
             <Plus size={16} aria-hidden /> Nova oferta
           </Link>

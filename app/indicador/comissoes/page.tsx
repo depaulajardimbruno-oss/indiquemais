@@ -65,14 +65,14 @@ export default function ComissoesIndicadorPage() {
             <div className="mt-3 flex gap-2">
               <button
                 type="submit"
-                className="rounded-brand bg-brand px-4 py-2 text-sm font-medium text-brand-fg"
+                className="rounded-brand bg-brand px-4 py-3 text-sm font-medium text-brand-fg"
               >
                 Salvar
               </button>
               <button
                 type="button"
                 onClick={() => setEditingPix(false)}
-                className="rounded-brand border border-line px-4 py-2 text-sm"
+                className="rounded-brand border border-line px-4 py-3 text-sm"
               >
                 Cancelar
               </button>
@@ -108,7 +108,7 @@ export default function ComissoesIndicadorPage() {
                   <div className="mt-3 flex flex-wrap gap-2">
                     <button
                       onClick={() => set(c.id, "confirmada", "Você confirmou o recebimento.")}
-                      className="rounded-brand bg-brand px-4 py-2 text-sm font-medium text-brand-fg hover:opacity-90"
+                      className="rounded-brand bg-brand px-4 py-3 text-sm font-medium text-brand-fg hover:opacity-90"
                     >
                       Recebi
                     </button>
@@ -120,7 +120,7 @@ export default function ComissoesIndicadorPage() {
                           "Você avisou que não recebeu. No sistema real, o time do Indique Mais media o caso com a empresa.",
                         )
                       }
-                      className="rounded-brand border border-line px-4 py-2 text-sm"
+                      className="rounded-brand border border-line px-4 py-3 text-sm"
                     >
                       Não recebi
                     </button>

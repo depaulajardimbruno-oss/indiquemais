@@ -16,7 +16,7 @@ export function StageProgress({ stage }: { stage: Stage }) {
         {STAGES.map((s, i) => (
           <li key={s.key} className="flex flex-1 items-center gap-1">
             <span
-              className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-[11px] font-semibold ${
+              className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-semibold ${
                 i <= current ? "bg-brand text-brand-fg" : "bg-line text-muted"
               }`}
               aria-current={i === current ? "step" : undefined}

@@ -82,7 +82,7 @@ export default function ComissoesPage() {
                     setPaying(c.id);
                     setProof("");
                   }}
-                  className="mt-3 rounded-brand bg-brand px-4 py-2 text-sm font-medium text-brand-fg hover:opacity-90"
+                  className="mt-3 rounded-brand bg-brand px-4 py-3 text-sm font-medium text-brand-fg hover:opacity-90"
                 >
                   Registrar pagamento
                 </button>
@@ -107,13 +107,13 @@ export default function ComissoesPage() {
                     <button
                       disabled={!proof}
                       onClick={() => confirmPay(c.id)}
-                      className="rounded-brand bg-brand px-4 py-2 text-sm font-medium text-brand-fg disabled:opacity-40"
+                      className="rounded-brand bg-brand px-4 py-3 text-sm font-medium text-brand-fg disabled:opacity-40"
                     >
                       Confirmar pagamento
                     </button>
                     <button
                       onClick={() => setPaying(null)}
-                      className="rounded-brand border border-line bg-white px-4 py-2 text-sm"
+                      className="rounded-brand border border-line bg-white px-4 py-3 text-sm"
                     >
                       Cancelar
                     </button>
