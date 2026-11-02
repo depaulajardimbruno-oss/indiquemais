@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   BadgeCheck,
@@ -6,15 +7,16 @@ import {
   Eye,
   GraduationCap,
   Hammer,
-  Handshake,
+  Building2,
+  UserRound,
+  Ruler,
+  TrendingUp,
   HeartPulse,
   Link2,
   LockKeyhole,
-  MessageCircle,
   PiggyBank,
   Plug,
   Receipt,
-  Scale,
   Sofa,
   Sparkles,
   Users,
@@ -22,42 +24,62 @@ import {
 } from "lucide-react";
 import { getBrand } from "@/lib/brand";
 import { StageProgress } from "@/components/StageProgress";
+import { Logo } from "@/components/Logo";
+import lion from "@/public/brand/leao.png";
 
 const STEPS = [
   {
-    icon: Handshake,
-    title: "Você fecha com uma empresa parceira",
-    text: "Gostou do serviço? A empresa convida você para indicar quem você conhece.",
+    icon: UserRound,
+    title: "Cadastre-se",
+    text: "Receba um link exclusivo para indicar. É grátis.",
   },
   {
     icon: Link2,
-    title: "Você recebe o seu link",
-    text: "Ele é só seu. Mande pelo WhatsApp para amigos, vizinhos e família.",
+    title: "Compartilhe",
+    text: "Mande pelo WhatsApp para amigos, clientes e parceiros.",
   },
   {
-    icon: MessageCircle,
-    title: "Seu amigo pede um orçamento",
-    text: "Pelo seu link ou falando o seu nome. Você acompanha cada etapa pelo celular.",
+    icon: Eye,
+    title: "Acompanhe",
+    text: "Veja quem pediu orçamento e em que etapa cada indicação está.",
   },
   {
     icon: Wallet,
-    title: "Fechou? Você recebe",
-    text: "A empresa paga direto no seu PIX e você confirma que recebeu.",
+    title: "Ganhe",
+    text: "Venda concluída e paga? A comissão é liberada para você.",
+  },
+];
+
+const WHO = [
+  {
+    icon: Ruler,
+    title: "Profissionais",
+    text: "Arquitetos, designers e outros profissionais ganham comissão ao recomendar produtos e serviços em que confiam.",
+  },
+  {
+    icon: HeartPulse,
+    title: "Clientes",
+    text: "Quem já comprou e gostou indica o que usa e é recompensado com comissão ou benefícios.",
+  },
+  {
+    icon: Building2,
+    title: "Empresas",
+    text: "Criam uma rede de promotores engajados e pagam só quando a venda acontece.",
   },
 ];
 
 const FOR_YOU = [
   { icon: PiggyBank, title: "Indicar não custa nada", text: "Você não paga para participar." },
   { icon: Eye, title: "Você vê cada etapa", text: "Sabe se pediram orçamento, se fechou e quando sai o pagamento." },
-  { icon: Receipt, title: "Receba direto no PIX", text: "Sem intermediário segurando o seu dinheiro." },
+  { icon: Receipt, title: "Receba por PIX", text: "Informe sua chave uma vez. As recompensas são pagas todo último dia do mês." },
   { icon: LockKeyhole, title: "Privacidade de quem você indica", text: "Você vê só o primeiro nome. Endereço e valores ficam entre o amigo e a empresa." },
 ];
 
 const FOR_COMPANIES = [
-  { icon: Scale, title: "Você só paga quando vende", text: "A comissão nasce depois que o serviço foi entregue e pago." },
-  { icon: BadgeCheck, title: "Você define as regras", text: "Valor fixo ou percentual, por produto, com o prazo de segurança que preferir." },
-  { icon: Users, title: "Sabe quem trouxe cada cliente", text: "Toda indicação fica registrada, com etapa e histórico." },
-  { icon: Plug, title: "Começa simples, depois conecta", text: "No início você registra as vendas no painel. Depois ligamos ao sistema que você já usa." },
+  { icon: TrendingUp, title: "Mais vendas, de forma orgânica", text: "Cada profissional ou cliente vira um canal de venda, e indicação converte mais do que anúncio." },
+  { icon: Plug, title: "Menos trabalho manual", text: "O sistema rastreia a indicação e organiza o pagamento da recompensa. Depois conectamos ao sistema que você já usa." },
+  { icon: Users, title: "Clientes que viram embaixadores", text: "Reconhecer quem indica fideliza e faz a rede crescer sozinha." },
+  { icon: BadgeCheck, title: "Transparência total", text: "Painel com quem indicou, o que foi vendido e quanto foi gerado." },
 ];
 
 const NICHES = [
@@ -72,7 +94,7 @@ const NICHES = [
 const FAQ = [
   {
     q: "Quanto custa para indicar?",
-    a: "Nada. Quem indica não paga nada para participar e para receber.",
+    a: "Nada. Criar a conta e indicar é gratuito.",
   },
   {
     q: "Preciso ser cliente de alguma empresa?",
@@ -88,11 +110,15 @@ const FAQ = [
   },
   {
     q: "Quando recebo a comissão?",
-    a: "Depois que o serviço do seu amigo for feito e pago, e o prazo de segurança da empresa passar. Você acompanha tudo no painel.",
+    a: "Depois que a venda do seu amigo for concluída e paga. As recompensas são pagas todo último dia do mês, e você acompanha tudo no painel.",
   },
   {
     q: "Como recebo o dinheiro?",
-    a: "A empresa paga direto na sua chave PIX. Quando cair na conta, você confirma no painel. Se não caiu, é só avisar ali mesmo.",
+    a: "Por PIX, na chave que você cadastrar. Quando cair na conta, você confirma no painel. Se não caiu, é só avisar ali mesmo.",
+  },
+  {
+    q: "Quanto a empresa paga ao Indiki+?",
+    a: "Apenas 1% sobre as vendas já realizadas por indicação. Sem venda, sem custo.",
   },
   {
     q: "Meus dados e os do meu amigo ficam seguros?",
@@ -101,9 +127,9 @@ const FAQ = [
 ];
 
 const btnPrimary =
-  "inline-flex min-h-12 items-center justify-center rounded-brand bg-brand px-6 py-3 text-base font-semibold text-brand-fg hover:opacity-90";
+  "inline-flex min-h-12 items-center justify-center rounded-full bg-accent px-7 py-3 text-base font-bold text-ink shadow-sm hover:brightness-95";
 const btnSecondary =
-  "inline-flex min-h-12 items-center justify-center rounded-brand border-2 border-brand px-6 py-3 text-base font-semibold text-brand hover:bg-brand-soft";
+  "inline-flex min-h-12 items-center justify-center rounded-full border-2 border-brand px-7 py-3 text-base font-semibold text-brand hover:bg-brand-soft";
 
 export default async function Home() {
   const brand = await getBrand();
@@ -119,11 +145,8 @@ export default async function Home() {
 
       <header className="border-b border-line bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="grid h-10 w-10 place-items-center rounded-brand bg-brand text-lg font-bold text-brand-fg">
-              {brand.name.charAt(0)}
-            </span>
-            <span className="font-display text-xl font-bold">{brand.name}</span>
+          <Link href="/" aria-label={`${brand.name}, página inicial`}>
+            <Logo name={brand.name} logoUrl={brand.logoUrl} height={34} />
           </Link>
           <nav aria-label="Seções da página" className="hidden items-center gap-6 text-base font-medium md:flex">
             <a href="#como-funciona" className="hover:text-brand">Como funciona</a>
@@ -139,19 +162,24 @@ export default async function Home() {
 
       <main id="conteudo">
         {/* Abertura: a conversa entre vizinhos é o coração do produto */}
-        <section className="bg-brand-soft">
-          <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-14 lg:grid-cols-2 lg:py-20">
-            <div>
-              <h1 className="font-display text-[clamp(2.4rem,6vw,4rem)] font-extrabold leading-[1.05] tracking-tight">
-                Quem recomenda bem, ganha por isso.
+        <section className="relative overflow-hidden bg-white">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 opacity-60 [background-image:radial-gradient(var(--accent)_2px,transparent_2.5px)] [background-size:16px_16px] [mask-image:radial-gradient(circle_at_70%_30%,black,transparent_70%)]"
+          />
+          <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-5 pt-12 lg:grid-cols-[1.1fr_0.9fr] lg:pt-16">
+            <div className="pb-12 lg:pb-20">
+              <p className="text-lg font-bold text-brand">Indique | Acompanhe | Ganhe</p>
+              <h1 className="mt-3 font-display text-[clamp(2.5rem,6vw,4.25rem)] font-extrabold leading-[1.05] tracking-tight text-brand">
+                Transforme suas indicações em conquistas reais.
               </h1>
               <p className="mt-5 max-w-[34rem] text-xl leading-relaxed">
                 Gostou do serviço de uma empresa e indicou para um vizinho? Se ele fechar, você
-                recebe uma comissão. Simples assim.
+                ganha uma comissão. Simples, automático e transparente.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/entrar" className={btnPrimary}>
-                  Entrar para indicar
+                  Quero indicar e ganhar
                 </Link>
                 <a href="#empresas" className={btnSecondary}>
                   Tenho uma empresa
@@ -162,30 +190,19 @@ export default async function Home() {
               </p>
             </div>
 
-            <figure className="mx-auto w-full max-w-md">
-              <div className="rounded-[1.75rem] border border-line bg-white p-4 shadow-sm sm:p-5">
-                <div className="space-y-3 text-base">
-                  <p className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-brand px-4 py-3 text-brand-fg">
-                    Fechei a sacada da minha casa e adorei o serviço. Peça seu orçamento pelo meu link.
-                  </p>
-                  <p className="max-w-[85%] rounded-2xl rounded-bl-md bg-surface px-4 py-3 ring-1 ring-line">
-                    Pedi pelo seu link e já fechei! Obrigado pela dica.
-                  </p>
-                  <div className="flex items-center gap-3 rounded-2xl border-2 border-accent bg-white px-4 py-3">
-                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-accent/20">
-                      <Wallet size={22} aria-hidden />
-                    </span>
-                    <p className="leading-snug">
-                      <strong className="block">Comissão liberada</strong>
-                      <span className="text-muted">R$ 300,00 direto no seu PIX</span>
-                    </p>
-                  </div>
-                </div>
+            <div className="relative mx-auto w-full max-w-sm self-end lg:max-w-md">
+              <div aria-hidden className="absolute inset-x-[-8%] bottom-0 top-[18%] rounded-t-full bg-gradient-to-b from-accent to-accent/10" />
+              <Image src={lion} alt="Leão, mascote do Indiki+, de braços cruzados" priority className="relative h-auto w-full" sizes="(min-width:1024px) 440px, 90vw" />
+              <div className="absolute -left-2 bottom-8 flex max-w-[15rem] items-center gap-3 rounded-2xl border-2 border-accent bg-white px-4 py-3 shadow-md sm:-left-10">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-accent/25">
+                  <Wallet size={22} aria-hidden />
+                </span>
+                <p className="text-sm leading-snug">
+                  <strong className="block text-base">Comissão liberada</strong>
+                  <span className="text-muted">Exemplo ilustrativo</span>
+                </p>
               </div>
-              <figcaption className="mt-3 text-center text-sm text-muted">
-                Exemplo ilustrativo de como funciona
-              </figcaption>
-            </figure>
+            </div>
           </div>
         </section>
 
@@ -208,6 +225,26 @@ export default async function Home() {
                 </li>
               ))}
             </ol>
+          </div>
+        </section>
+
+        <section className="bg-brand text-brand-fg">
+          <div className="mx-auto max-w-6xl px-5 py-16">
+            <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
+              Quem pode usar o Indiki+
+            </h2>
+            <p className="mt-3 max-w-[40rem] text-lg opacity-90">No Indiki+ todo mundo sai ganhando.</p>
+            <ul className="mt-10 grid gap-6 md:grid-cols-3">
+              {WHO.map(({ icon: Icon, title, text }) => (
+                <li key={title} className="rounded-brand bg-white/10 p-6 ring-1 ring-white/20">
+                  <span className="grid h-12 w-12 place-items-center rounded-full bg-accent text-ink">
+                    <Icon size={26} aria-hidden />
+                  </span>
+                  <h3 className="mt-4 text-xl font-bold">{title}</h3>
+                  <p className="mt-2 text-base leading-relaxed opacity-90">{text}</p>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 
@@ -256,7 +293,7 @@ export default async function Home() {
               Para empresas: clientes satisfeitos viram sua equipe de vendas
             </h2>
             <p className="mt-4 max-w-[40rem] text-lg leading-relaxed">
-              Quem já comprou de você é a melhor propaganda. Com o Indique Mais, você premia essa
+              Quem já comprou de você é a melhor propaganda. Com o Indiki+, você premia essa
               recomendação e acompanha tudo, sem planilha.
             </p>
             <ul className="mt-10 grid gap-6 sm:grid-cols-2">
@@ -272,6 +309,13 @@ export default async function Home() {
                 </li>
               ))}
             </ul>
+            <div className="mt-8 flex flex-wrap items-center gap-5 rounded-brand bg-brand p-6 text-brand-fg">
+              <p className="font-display text-6xl font-extrabold leading-none text-accent">1%</p>
+              <p className="max-w-md text-lg leading-snug">
+                é tudo o que a empresa paga ao Indiki+, só sobre vendas já realizadas por indicação.
+                Sem venda, sem custo.
+              </p>
+            </div>
             <div className="mt-8">
               <Link href="/empresa" className={btnPrimary}>
                 Ver o painel da empresa
@@ -329,7 +373,7 @@ export default async function Home() {
             </h2>
             <Link
               href="/entrar"
-              className="inline-flex min-h-12 items-center justify-center rounded-brand bg-white px-6 py-3 text-base font-semibold text-ink hover:opacity-90"
+              className="inline-flex min-h-12 items-center justify-center rounded-full bg-accent px-7 py-3 text-base font-bold text-ink hover:brightness-95"
             >
               Entrar para indicar
             </Link>
@@ -340,7 +384,7 @@ export default async function Home() {
       <footer className="bg-white">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-8 text-sm text-muted md:flex-row md:items-center md:justify-between">
           <p>
-            <strong className="text-ink">{brand.name}</strong>. Plataforma em fase de testes.
+            <strong className="text-ink">{brand.name}</strong>. Plataforma em fase de testes. www.indikimais.com.br
           </p>
           <nav aria-label="Rodapé" className="flex flex-wrap gap-x-6 gap-y-2">
             <Link href="/entrar" className="hover:text-brand">Entrar</Link>

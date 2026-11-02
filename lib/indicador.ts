@@ -1,5 +1,5 @@
 // Dados FICTÍCIOS do painel do indicador (protótipo).
-// Indicador = cliente que já fechou com uma empresa que contratou o Indique Mais.
+// Indicador = cliente que já fechou com uma empresa que contratou o Indiki+.
 // Uma pessoa pode ser cliente (e indicar) em várias empresas ao mesmo tempo, cada uma com seu link.
 // "Casa Nova Reformas" é uma empresa FICTÍCIA, criada só para mostrar o caso de duas empresas.
 

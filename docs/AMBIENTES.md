@@ -1,4 +1,4 @@
-# Ambientes do Indique Mais
+# Ambientes do Indiki+
 
 Quatro lugares onde o sistema roda. Cada mudança passa por todos, na ordem, antes de chegar ao público.
 

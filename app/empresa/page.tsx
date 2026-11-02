@@ -39,9 +39,9 @@ export default function EmpresaHome() {
       </div>
 
       <div className="mt-4 rounded-brand border border-dashed border-line bg-white px-4 py-3 text-sm text-muted">
-        <strong className="text-ink">Taxa do Indique Mais:</strong> a definir com o cliente
-        (mensalidade, percentual sobre a comissão ou os dois). Quando definida, aparece aqui
-        como o que a empresa deve à plataforma.
+        <strong className="text-ink">Taxa do Indiki+:</strong> 1% sobre vendas já efetuadas (modelo do
+        material comercial). Nas vendas acima, são{" "}
+        <strong className="text-ink">{brl(Math.round(salesValue * 0.01))}</strong>. Você só paga quando vende.
       </div>
 
       {disputes > 0 && (

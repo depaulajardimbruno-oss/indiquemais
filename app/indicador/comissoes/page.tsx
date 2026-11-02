@@ -135,7 +135,7 @@ export default function ComissoesIndicadorPage() {
                         set(
                           c.id,
                           "contestada",
-                          "Você avisou que não recebeu. No sistema real, o time do Indique Mais media o caso com a empresa.",
+                          "Você avisou que não recebeu. No sistema real, o time do Indiki+ media o caso com a empresa.",
                         )
                       }
                       className="rounded-brand border border-line px-4 py-3 text-sm"

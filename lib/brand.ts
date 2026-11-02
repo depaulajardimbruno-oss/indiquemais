@@ -14,14 +14,14 @@ export type Brand = {
 };
 
 export const DEFAULT_BRAND: Brand = {
-  name: "Indique Mais",
-  tagline: "Indique, venda e ganhe.",
+  name: "Indiki+",
+  tagline: "Indique, acompanhe e ganhe.",
   logoUrl: null,
-  primary: "#0f766e",
+  primary: "#14385f",
   primaryFg: "#ffffff",
-  accent: "#f59e0b",
+  accent: "#f7931e",
   surface: "#f8fafc",
-  ink: "#0f172a",
+  ink: "#10243e",
   radiusPx: 12,
 };
 

@@ -18,7 +18,7 @@ export default function NovaOfertaPage() {
         <CheckCircle2 className="mx-auto text-brand" size={40} aria-hidden />
         <h1 className="mt-3 text-xl font-semibold">Oferta enviada para aprovação</h1>
         <p className="mt-1 text-sm text-muted">
-          No sistema real, o time do Indique Mais revisa a oferta antes de ela aparecer para os
+          No sistema real, o time do Indiki+ revisa a oferta antes de ela aparecer para os
           indicadores. Neste protótipo, nada é salvo.
         </p>
         <Link

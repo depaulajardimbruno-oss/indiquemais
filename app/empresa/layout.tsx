@@ -1,3 +1,4 @@
+import { Logo } from "@/components/Logo";
 import Link from "next/link";
 import { getBrand } from "@/lib/brand";
 import { BottomNav, SidebarNav } from "@/components/EmpresaNav";
@@ -11,15 +12,8 @@ export default async function EmpresaLayout({ children }: LayoutProps<"/empresa"
       <div className="flex flex-1">
         <aside className="hidden w-60 shrink-0 flex-col border-r border-line bg-white p-4 md:flex">
           <Link href="/empresa" className="mb-6 flex items-center gap-2 px-2">
-            {brand.logoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={brand.logoUrl} alt={brand.name} className="h-8 w-auto" />
-            ) : (
-              <span className="grid h-8 w-8 place-items-center rounded-brand bg-brand text-sm font-bold text-brand-fg">
-                {brand.name.charAt(0)}
-              </span>
-            )}
-            <span className="font-semibold">{brand.name}</span>
+            <Logo name={brand.name} logoUrl={brand.logoUrl} height={28} />
+            <span className="rounded-full bg-brand-soft px-2 py-0.5 text-xs font-semibold text-brand">Empresa</span>
           </Link>
           <SidebarNav />
           <div className="mt-auto rounded-brand bg-brand-soft p-3 text-xs text-muted">

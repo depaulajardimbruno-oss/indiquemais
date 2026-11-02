@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getBrand } from "@/lib/brand";
 import { companies, me } from "@/lib/indicador";
+import { Logo } from "@/components/Logo";
 import { IndicadorNav } from "@/components/IndicadorNav";
 import { PrototypeBanner } from "@/components/ui";
 
@@ -12,10 +13,7 @@ export default async function IndicadorLayout({ children }: LayoutProps<"/indica
       <header className="border-b border-line bg-white">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
           <Link href="/indicador" className="flex items-center gap-2">
-            <span className="grid h-8 w-8 place-items-center rounded-brand bg-brand text-sm font-bold text-brand-fg">
-              {brand.name.charAt(0)}
-            </span>
-            <span className="font-semibold">{brand.name}</span>
+            <Logo name={brand.name} logoUrl={brand.logoUrl} height={26} />
           </Link>
           <IndicadorNav />
           <div className="text-right text-xs leading-tight">
