@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import "./globals.css";
 import { brandCssVars, getBrand } from "@/lib/brand";
+import { EnvBanner } from "@/components/EnvBanner";
 
 export async function generateMetadata(): Promise<Metadata> {
   const brand = await getBrand();
@@ -19,7 +20,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className="h-full antialiased"
       style={brandCssVars(brand) as CSSProperties}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <EnvBanner />
+        {children}
+      </body>
     </html>
   );
 }
