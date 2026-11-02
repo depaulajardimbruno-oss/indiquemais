@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card, PageHeader, StatCard } from "@/components/ui";
-import { brl, commissions, offerName, offers, sales, shortDate } from "@/lib/mock";
+import { brl, commissions, offerName, offers, PILOT_COMPANY, sales, shortDate } from "@/lib/mock";
 
 export const metadata = { title: "Visão geral" };
 
@@ -28,7 +28,7 @@ export default function EmpresaHome() {
     <>
       <PageHeader
         title="Visão geral"
-        subtitle="Resumo das indicações, vendas e comissões da sua empresa."
+        subtitle={`Indicações, vendas e comissões da ${PILOT_COMPANY}.`}
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -36,6 +36,12 @@ export default function EmpresaHome() {
         <StatCard label="Vendas geradas" value={brl(salesValue)} hint={`${sales.length} vendas`} tone="brand" />
         <StatCard label="Comissões a pagar" value={brl(toPay)} hint="já liberadas" tone="warn" />
         <StatCard label="Comissões pagas" value={brl(paid)} hint="confirmadas ou com comprovante" />
+      </div>
+
+      <div className="mt-4 rounded-brand border border-dashed border-line bg-white px-4 py-3 text-sm text-muted">
+        <strong className="text-ink">Taxa do Indique Mais:</strong> a definir com o cliente
+        (mensalidade, percentual sobre a comissão ou os dois). Quando definida, aparece aqui
+        como o que a empresa deve à plataforma.
       </div>
 
       {disputes > 0 && (

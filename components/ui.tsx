@@ -77,7 +77,7 @@ export function SourceBadge({ source }: { source: "api" | "manual" }) {
 export function PrototypeBanner() {
   return (
     <div className="bg-accent/15 px-4 py-2 text-center text-xs text-ink">
-      Protótipo para validação: dados de exemplo, nada aqui é real ou é salvo.
+      Protótipo para validação: valores, nomes e vendas são fictícios e nada é salvo.
     </div>
   );
 }

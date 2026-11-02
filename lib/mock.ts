@@ -1,4 +1,5 @@
-// Dados de exemplo do protótipo. Não são dados reais.
+// Dados FICTÍCIOS do protótipo. Empresa piloto: Soulglass (apenas o nome; valores,
+// pessoas e vendas abaixo são inventados e não representam a empresa real).
 
 export type CommissionStatus = "pendente" | "liberada" | "paga" | "contestada";
 
@@ -34,69 +35,72 @@ export type Commission = {
   releaseDate: string; // ISO
 };
 
+export const PILOT_COMPANY = "Soulglass";
+
 export const offers: Offer[] = [
   {
     id: "o1",
-    name: "Plano Anual Premium",
-    description: "Assinatura anual com 2 meses grátis para novos clientes.",
-    commissionLabel: "10% da venda",
-    graceDays: 15,
+    name: "Envidraçamento de sacada",
+    description:
+      "Cortina de vidro para fechar a sacada do apartamento, com medição e instalação inclusas.",
+    commissionLabel: "3% da venda",
+    graceDays: 30,
     active: true,
-    referrals: 148,
-    sales: 31,
+    referrals: 64,
+    sales: 6,
   },
   {
     id: "o2",
-    name: "Consultoria de Implantação",
-    description: "Pacote de 20h para implantar o sistema na sua empresa.",
-    commissionLabel: "R$ 300,00 fixo",
-    graceDays: 30,
+    name: "Box de banheiro",
+    description: "Box em vidro temperado sob medida, com instalação.",
+    commissionLabel: "5% da venda",
+    graceDays: 15,
     active: true,
-    referrals: 52,
-    sales: 9,
+    referrals: 142,
+    sales: 19,
   },
   {
     id: "o3",
-    name: "Curso Online Essencial",
-    description: "Acesso vitalício ao curso com certificado.",
-    commissionLabel: "20% da venda",
-    graceDays: 7,
+    name: "Guarda-corpo de vidro",
+    description: "Guarda-corpo para escadas, sacadas e terraços, com instalação.",
+    commissionLabel: "4% da venda",
+    graceDays: 30,
     active: true,
-    referrals: 311,
-    sales: 87,
+    referrals: 38,
+    sales: 5,
   },
   {
     id: "o4",
-    name: "Kit Lançamento (encerrada)",
-    description: "Campanha de lançamento encerrada em setembro.",
-    commissionLabel: "15% da venda",
+    name: "Campanha de verão (encerrada)",
+    description: "Condição especial de box e espelhos, encerrada em março.",
+    commissionLabel: "R$ 100,00 fixo",
     graceDays: 15,
     active: false,
-    referrals: 64,
-    sales: 12,
+    referrals: 27,
+    sales: 4,
   },
 ];
 
 export const sales: Sale[] = [
-  { id: "v1", date: "2026-10-30", offerId: "o1", referrer: "Marina Souza", buyer: "C*** A.", valueCents: 148000, source: "api" },
-  { id: "v2", date: "2026-10-29", offerId: "o3", referrer: "Rafael Lima", buyer: "J*** P.", valueCents: 29700, source: "api" },
-  { id: "v3", date: "2026-10-27", offerId: "o2", referrer: "Marina Souza", buyer: "Empresa L***", valueCents: 480000, source: "manual" },
-  { id: "v4", date: "2026-10-24", offerId: "o3", referrer: "Camila Ferraz", buyer: "T*** R.", valueCents: 29700, source: "api" },
-  { id: "v5", date: "2026-10-21", offerId: "o1", referrer: "Diego Alves", buyer: "M*** S.", valueCents: 148000, source: "api" },
-  { id: "v6", date: "2026-10-15", offerId: "o3", referrer: "Rafael Lima", buyer: "A*** B.", valueCents: 29700, source: "manual" },
-  { id: "v7", date: "2026-10-08", offerId: "o1", referrer: "Camila Ferraz", buyer: "Empresa P***", valueCents: 148000, source: "api" },
-  { id: "v8", date: "2026-09-26", offerId: "o2", referrer: "Diego Alves", buyer: "Empresa K***", valueCents: 480000, source: "manual" },
+  { id: "v1", date: "2026-10-30", offerId: "o2", referrer: "Marina Souza", buyer: "C*** A.", valueCents: 280000, source: "manual" },
+  { id: "v2", date: "2026-10-29", offerId: "o1", referrer: "Rafael Lima", buyer: "Cond. Ed. B***", valueCents: 1850000, source: "manual" },
+  { id: "v3", date: "2026-10-27", offerId: "o3", referrer: "Marina Souza", buyer: "J*** P.", valueCents: 940000, source: "api" },
+  { id: "v4", date: "2026-10-12", offerId: "o2", referrer: "Camila Ferraz", buyer: "T*** R.", valueCents: 310000, source: "api" },
+  { id: "v5", date: "2026-09-28", offerId: "o1", referrer: "Diego Alves", buyer: "M*** S.", valueCents: 2200000, source: "manual" },
+  { id: "v6", date: "2026-09-20", offerId: "o3", referrer: "Rafael Lima", buyer: "A*** B.", valueCents: 880000, source: "manual" },
+  { id: "v7", date: "2026-09-10", offerId: "o1", referrer: "Camila Ferraz", buyer: "R*** M.", valueCents: 1650000, source: "api" },
+  { id: "v8", date: "2026-09-05", offerId: "o2", referrer: "Diego Alves", buyer: "L*** F.", valueCents: 265000, source: "manual" },
 ];
 
 export const commissions: Commission[] = [
-  { id: "c1", saleId: "v1", offerName: "Plano Anual Premium", referrer: "Marina Souza", pixKey: "marina***@email.com", amountCents: 14800, status: "pendente", releaseDate: "2026-11-14" },
-  { id: "c2", saleId: "v2", offerName: "Curso Online Essencial", referrer: "Rafael Lima", pixKey: "***.482.***-12", amountCents: 5940, status: "pendente", releaseDate: "2026-11-05" },
-  { id: "c3", saleId: "v3", offerName: "Consultoria de Implantação", referrer: "Marina Souza", pixKey: "marina***@email.com", amountCents: 30000, status: "pendente", releaseDate: "2026-11-26" },
-  { id: "c4", saleId: "v4", offerName: "Curso Online Essencial", referrer: "Camila Ferraz", pixKey: "(19) 9****-3321", amountCents: 5940, status: "liberada", releaseDate: "2026-10-31" },
-  { id: "c5", saleId: "v5", offerName: "Plano Anual Premium", referrer: "Diego Alves", pixKey: "diego***@email.com", amountCents: 14800, status: "liberada", releaseDate: "2026-11-05" },
-  { id: "c6", saleId: "v6", offerName: "Curso Online Essencial", referrer: "Rafael Lima", pixKey: "***.482.***-12", amountCents: 5940, status: "contestada", releaseDate: "2026-10-22" },
-  { id: "c7", saleId: "v7", offerName: "Plano Anual Premium", referrer: "Camila Ferraz", pixKey: "(19) 9****-3321", amountCents: 14800, status: "paga", releaseDate: "2026-10-23" },
-  { id: "c8", saleId: "v8", offerName: "Consultoria de Implantação", referrer: "Diego Alves", pixKey: "diego***@email.com", amountCents: 30000, status: "paga", releaseDate: "2026-10-26" },
+  { id: "c1", saleId: "v1", offerName: "Box de banheiro", referrer: "Marina Souza", pixKey: "marina***@email.com", amountCents: 14000, status: "pendente", releaseDate: "2026-11-14" },
+  { id: "c2", saleId: "v2", offerName: "Envidraçamento de sacada", referrer: "Rafael Lima", pixKey: "***.482.***-12", amountCents: 55500, status: "pendente", releaseDate: "2026-11-28" },
+  { id: "c3", saleId: "v3", offerName: "Guarda-corpo de vidro", referrer: "Marina Souza", pixKey: "marina***@email.com", amountCents: 37600, status: "pendente", releaseDate: "2026-11-26" },
+  { id: "c4", saleId: "v4", offerName: "Box de banheiro", referrer: "Camila Ferraz", pixKey: "(19) 9****-3321", amountCents: 15500, status: "liberada", releaseDate: "2026-10-27" },
+  { id: "c5", saleId: "v5", offerName: "Envidraçamento de sacada", referrer: "Diego Alves", pixKey: "diego***@email.com", amountCents: 66000, status: "liberada", releaseDate: "2026-10-28" },
+  { id: "c6", saleId: "v6", offerName: "Guarda-corpo de vidro", referrer: "Rafael Lima", pixKey: "***.482.***-12", amountCents: 35200, status: "contestada", releaseDate: "2026-10-20" },
+  { id: "c7", saleId: "v7", offerName: "Envidraçamento de sacada", referrer: "Camila Ferraz", pixKey: "(19) 9****-3321", amountCents: 49500, status: "paga", releaseDate: "2026-10-10" },
+  { id: "c8", saleId: "v8", offerName: "Box de banheiro", referrer: "Diego Alves", pixKey: "diego***@email.com", amountCents: 13250, status: "paga", releaseDate: "2026-09-20" },
 ];
 
 export const brl = (cents: number) =>

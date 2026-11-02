@@ -44,11 +44,11 @@ export default function NovaOfertaPage() {
         <Card className="space-y-4">
           <label className="block text-sm font-medium">
             Nome da oferta
-            <input required className={field} placeholder="Ex.: Plano Anual Premium" />
+            <input required className={field} placeholder="Ex.: Box de banheiro" />
           </label>
           <label className="block text-sm font-medium">
             Descrição para o indicador
-            <textarea required rows={3} className={field} placeholder="O que é, para quem serve e o que o indicador deve falar." />
+            <textarea required rows={3} className={field} placeholder="O que é, para quem serve e o que o indicador deve falar. Ex.: box sob medida, com instalação." />
           </label>
           <label className="block text-sm font-medium">
             Endereço de destino (para onde o link leva)

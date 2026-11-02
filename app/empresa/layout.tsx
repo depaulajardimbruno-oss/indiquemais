@@ -23,8 +23,8 @@ export default async function EmpresaLayout({ children }: LayoutProps<"/empresa"
           </Link>
           <SidebarNav />
           <div className="mt-auto rounded-brand bg-brand-soft p-3 text-xs text-muted">
-            <p className="font-medium text-ink">Loja Exemplo Ltda.</p>
-            <p>Painel da empresa</p>
+            <p className="font-medium text-ink">Soulglass</p>
+            <p>Empresa piloto · painel da empresa</p>
           </div>
         </aside>
         <main className="min-w-0 flex-1 p-4 pb-24 md:p-8 md:pb-8">
