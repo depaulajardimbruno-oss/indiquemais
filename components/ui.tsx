@@ -81,3 +81,34 @@ export function PrototypeBanner() {
     </div>
   );
 }
+
+/** Aviso de que a tela é demonstração e nada é gravado. */
+export function SaveNote({ saved }: { saved: boolean }) {
+  return (
+    <p role="status" className={`text-xs ${saved ? "text-emerald-700" : "text-muted"}`}>
+      {saved ? "Alterações aplicadas na tela. No sistema real elas são gravadas no banco." : "Protótipo: as mudanças valem só nesta tela."}
+    </p>
+  );
+}
+
+const PILL: Record<string, string> = {
+  paga: "bg-emerald-100 text-emerald-800",
+  valido: "bg-emerald-100 text-emerald-800",
+  aberta: "bg-amber-100 text-amber-800",
+  vencida: "bg-rose-100 text-rose-800",
+  cancelada: "bg-slate-100 text-slate-600",
+  revogado: "bg-rose-100 text-rose-800",
+  expirado: "bg-slate-100 text-slate-600",
+  desatualizado: "bg-amber-100 text-amber-800",
+};
+const PILL_LABEL: Record<string, string> = {
+  paga: "Paga", valido: "Válido", aberta: "Em aberto", vencida: "Vencida", cancelada: "Cancelada",
+  revogado: "Revogado", expirado: "Expirado", desatualizado: "Desatualizado",
+};
+export function Pill({ status }: { status: string }) {
+  return (
+    <span className={`inline-block whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ${PILL[status] ?? "bg-slate-100 text-slate-700"}`}>
+      {PILL_LABEL[status] ?? status}
+    </span>
+  );
+}

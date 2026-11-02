@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Building2, FileText, LogIn, UserRound } from "lucide-react";
+import { Award, Building2, FileText, Layers, LogIn, Receipt, ShieldCheck, Trophy, UserRound } from "lucide-react";
 import { getBrand } from "@/lib/brand";
 import { PrototypeBanner } from "@/components/ui";
 import { companies } from "@/lib/indicador";
@@ -22,6 +22,48 @@ const SCREENS = [
     icon: UserRound,
     title: "Cliente pede acesso pelo site",
     text: "O cliente se cadastra e a empresa libera o link dele.",
+  },
+  {
+    href: "/admin",
+    icon: ShieldCheck,
+    title: "Administração do Indiki+",
+    text: "Planos, grupos de cliente, selos, ranking, cobrança, repasses e fiscal, tudo por parâmetros.",
+  },
+  {
+    href: "/empresa/plano",
+    icon: Layers,
+    title: "Empresa: plano e uso",
+    text: "O plano da empresa, quanto já usou dos limites e como comparar com os outros.",
+  },
+  {
+    href: "/empresa/financeiro",
+    icon: Receipt,
+    title: "Empresa: financeiro e recibos",
+    text: "Faturas, repasse de comissões e recibos de pagamento.",
+  },
+  {
+    href: "/empresa/selo",
+    icon: Award,
+    title: "Empresa: selo para o site",
+    text: "O selo conquistado, o certificado e o código para colocar no site da empresa.",
+  },
+  {
+    href: "/verificar/IM-K7QX-2M9A",
+    icon: ShieldCheck,
+    title: "Página pública que confere o selo",
+    text: "O que o cliente vê ao clicar no selo no site da empresa.",
+  },
+  {
+    href: "/indicador/ranking",
+    icon: Trophy,
+    title: "Indicador: ranking e benefícios",
+    text: "Nível, pontos, benefícios e classificação de quem indica.",
+  },
+  {
+    href: "/indicador/informe",
+    icon: FileText,
+    title: "Indicador: informe de rendimentos",
+    text: "CPF, pagamentos recebidos e o informe do ano.",
   },
   {
     href: "/empresa/indicadores",
