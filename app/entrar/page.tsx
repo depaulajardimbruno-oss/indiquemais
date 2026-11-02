@@ -24,9 +24,9 @@ export default function EntrarPage() {
                 setSent(true);
               }}
             >
-              <h1 className="text-xl font-semibold">Entrar para indicar</h1>
+              <h1 className="text-xl font-semibold">Entrar ou criar conta grátis</h1>
               <p className="mt-1 text-sm text-muted">
-                Informe o e-mail que você usou ao fechar com a empresa. Enviamos um link para entrar, sem senha.
+                Informe seu e-mail. Enviamos um link para entrar, sem senha. Se for sua primeira vez, a conta é criada na hora.
               </p>
               <label className="mt-4 block text-sm font-medium">
                 Seu e-mail
@@ -40,6 +40,15 @@ export default function EntrarPage() {
                   placeholder="voce@email.com"
                 />
               </label>
+              <fieldset className="mt-4">
+                <legend className="text-sm font-medium">Eu sou</legend>
+                <label className="mt-2 flex items-center gap-3 rounded-brand border border-line p-3 text-sm">
+                  <input type="radio" name="perfil" defaultChecked /> Cliente: indico o que uso e gosto
+                </label>
+                <label className="mt-2 flex items-center gap-3 rounded-brand border border-line p-3 text-sm">
+                  <input type="radio" name="perfil" /> Profissional: arquiteto, designer ou parceiro
+                </label>
+              </fieldset>
               <button
                 type="submit"
                 className="mt-4 w-full rounded-brand bg-brand px-4 py-3 text-sm font-medium text-brand-fg hover:opacity-90"
@@ -47,8 +56,8 @@ export default function EntrarPage() {
                 Enviar link de acesso
               </button>
               <p className="mt-4 rounded-brand bg-brand-soft p-3 text-xs text-muted">
-                <strong className="text-ink">Fase de testes:</strong> por enquanto só indica quem já
-                é cliente de uma empresa parceira e foi convidado por ela.
+                Criar conta e indicar é gratuito. Você recebe um link ou código exclusivo para
+                compartilhar.
               </p>
             </form>
           ) : (

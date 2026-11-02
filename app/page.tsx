@@ -98,11 +98,11 @@ const FAQ = [
   },
   {
     q: "Preciso ser cliente de alguma empresa?",
-    a: "Nesta fase de testes, sim: indicam os clientes que a empresa parceira convidou. Depois, a ideia é abrir para mais pessoas.",
+    a: "Não. Clientes indicam o que usam e gostam, e profissionais como arquitetos e designers indicam produtos e serviços em que confiam. Basta criar a conta, que é gratuita.",
   },
   {
     q: "Posso indicar mais de uma empresa?",
-    a: "Pode. Se você é cliente de duas empresas parceiras, tem um link para cada uma e um só painel. Cada indicação e cada comissão mostra de qual empresa vem, e cada empresa paga a sua parte.",
+    a: "Pode. Se você é cliente de duas empresas parceiras, tem um link para cada uma e um só painel. Cada indicação e cada comissão mostra de qual empresa vem, e você recebe tudo junto, no mesmo pagamento.",
   },
   {
     q: "E se meu amigo não usar o meu link?",
@@ -186,7 +186,7 @@ export default async function Home() {
                 </a>
               </div>
               <p className="mt-4 text-base text-muted">
-                Nesta fase de testes, indicam os clientes convidados por empresas parceiras.
+                Cadastro gratuito para clientes e profissionais.
               </p>
             </div>
 
@@ -203,6 +203,24 @@ export default async function Home() {
                 </p>
               </div>
             </div>
+          </div>
+        </section>
+
+        <section className="bg-brand-soft">
+          <div className="mx-auto grid max-w-6xl items-center gap-6 px-5 py-12 md:grid-cols-[1fr_auto]">
+            <div>
+              <h2 className="font-display text-2xl font-bold tracking-tight text-brand md:text-3xl">
+                Você já pensou no poder das indicações?
+              </h2>
+              <p className="mt-3 max-w-[40rem] text-lg leading-relaxed">
+                Segundo o material do Indiki+, 90% das pessoas confiam mais em recomendações de
+                amigos ou profissionais do que em propaganda comum. E se cada recomendação sua fosse
+                recompensada?
+              </p>
+            </div>
+            <p className="font-display text-xl font-bold text-brand md:text-right">
+              Chegou a hora de valorizar<br />o que você indica.
+            </p>
           </div>
         </section>
 
@@ -369,7 +387,7 @@ export default async function Home() {
         <section className="bg-brand text-brand-fg">
           <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-5 py-14 md:flex-row md:items-center md:justify-between">
             <h2 className="font-display text-3xl font-bold tracking-tight md:max-w-xl md:text-4xl">
-              Já é cliente de uma empresa parceira? Comece a indicar hoje.
+              Pronto para transformar indicações em oportunidades? Cadastre-se e comece a ganhar.
             </h2>
             <Link
               href="/entrar"

@@ -81,7 +81,7 @@ export default function ComissoesIndicadorPage() {
           </form>
         )}
         <p className="mt-3 text-xs text-muted">
-          Cada empresa paga direto na sua chave. Confira sempre se é a sua.
+          O Indiki+ paga na sua chave PIX todo último dia do mês, somando todas as empresas. Confira se a chave é a sua.
         </p>
       </Card>
 

@@ -52,7 +52,7 @@ export const STAGES: { key: Exclude<Stage, "perdido">; label: string; hint: stri
   { key: "orcamento", label: "Orçamento", hint: "O orçamento foi enviado ao seu amigo." },
   { key: "fechou", label: "Fechou", hint: "Seu amigo fechou com a empresa." },
   { key: "instalada", label: "Instalado e pago", hint: "A obra foi feita e paga. Sua comissão é liberada." },
-  { key: "paga", label: "Comissão paga", hint: "A empresa pagou a sua comissão." },
+  { key: "paga", label: "Comissão paga", hint: "O Indiki+ pagou a sua comissão." },
 ];
 
 export type Referral = {
@@ -96,19 +96,19 @@ export type MyCommission = {
 
 export const myCommissions: MyCommission[] = [
   { id: "m1", companyId: "soulglass", friend: "Carla M.", offer: "Envidraçamento de sacada", amountCents: 30000, status: "pendente", note: "Libera depois da instalação e do pagamento da obra." },
-  { id: "m2", companyId: "soulglass", friend: "Sérgio T.", offer: "Envidraçamento de sacada", amountCents: 30000, status: "liberada", note: "A empresa vai pagar via PIX para a sua chave." },
-  { id: "m3", companyId: "soulglass", friend: "Ana L.", offer: "Box de banheiro", amountCents: 10000, status: "paga", note: "A empresa informou o pagamento. Confirme se recebeu." },
+  { id: "m2", companyId: "soulglass", friend: "Sérgio T.", offer: "Envidraçamento de sacada", amountCents: 30000, status: "liberada", note: "O Indiki+ paga no último dia do mês, via PIX para a sua chave." },
+  { id: "m3", companyId: "soulglass", friend: "Ana L.", offer: "Box de banheiro", amountCents: 10000, status: "paga", note: "O Indiki+ enviou o pagamento. Confirme se recebeu." },
   { id: "m4", companyId: "soulglass", friend: "Rui S.", offer: "Box de banheiro", amountCents: 10000, status: "confirmada", note: "Você confirmou o recebimento." },
 ];
 
 myCommissions.push(
   { id: "m5", companyId: "casanova", friend: "Helena K.", offer: "Reforma de banheiro", amountCents: 15000, status: "pendente", note: "Libera depois da obra e do pagamento." },
-  { id: "m6", companyId: "casanova", friend: "Otávio B.", offer: "Pintura", amountCents: 5000, status: "paga", note: "A empresa informou o pagamento. Confirme se recebeu." },
+  { id: "m6", companyId: "casanova", friend: "Otávio B.", offer: "Pintura", amountCents: 5000, status: "paga", note: "O Indiki+ enviou o pagamento. Confirme se recebeu." },
 );
 
 export const STATUS_INFO: Record<MyCommissionStatus, { label: string; cls: string }> = {
   pendente: { label: "Aguardando obra", cls: "bg-slate-100 text-slate-700" },
-  liberada: { label: "Empresa vai pagar", cls: "bg-amber-100 text-amber-800" },
+  liberada: { label: "Pagamento no fim do mês", cls: "bg-amber-100 text-amber-800" },
   paga: { label: "Pago: confirme", cls: "bg-sky-100 text-sky-800" },
   confirmada: { label: "Recebida", cls: "bg-emerald-100 text-emerald-800" },
   contestada: { label: "Em disputa", cls: "bg-rose-100 text-rose-800" },
