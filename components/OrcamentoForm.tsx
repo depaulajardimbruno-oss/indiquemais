@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { Card } from "@/components/ui";
-import { PRODUCTS } from "@/lib/indicador";
 
 const input =
   "mt-1 w-full rounded-brand border border-line bg-white px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand-line";
@@ -13,9 +12,11 @@ const input =
  *  - Não veio pelo link: o amigo informa quem indicou (nome e telefone), que será avisado para confirmar. */
 export function OrcamentoForm({
   company,
+  products,
   referrerFirstName,
 }: {
   company: string;
+  products: string[];
   referrerFirstName?: string;
 }) {
   const [sent, setSent] = useState(false);
@@ -60,7 +61,7 @@ export function OrcamentoForm({
             <option value="" disabled>
               Escolha uma opção
             </option>
-            {PRODUCTS.map((p) => (
+            {products.map((p) => (
               <option key={p}>{p}</option>
             ))}
           </select>

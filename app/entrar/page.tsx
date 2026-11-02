@@ -26,7 +26,7 @@ export default function EntrarPage() {
             >
               <h1 className="text-xl font-semibold">Entrar para indicar</h1>
               <p className="mt-1 text-sm text-muted">
-                Informe o e-mail que você usou na Soulglass. Enviamos um link para entrar, sem senha.
+                Informe o e-mail que você usou ao fechar com a empresa. Enviamos um link para entrar, sem senha.
               </p>
               <label className="mt-4 block text-sm font-medium">
                 Seu e-mail
@@ -48,7 +48,7 @@ export default function EntrarPage() {
               </button>
               <p className="mt-4 rounded-brand bg-brand-soft p-3 text-xs text-muted">
                 <strong className="text-ink">Fase de testes:</strong> por enquanto só indica quem já
-                é cliente da Soulglass e foi convidado por ela.
+                é cliente de uma empresa parceira e foi convidado por ela.
               </p>
             </form>
           ) : (

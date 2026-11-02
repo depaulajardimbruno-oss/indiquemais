@@ -124,7 +124,7 @@ export default function ComissoesPage() {
               {c.status === "contestada" && (
                 <p className="mt-3 rounded-brand bg-rose-50 p-3 text-sm text-rose-900">
                   O indicador contestou esta comissão. No sistema real, aqui você envia sua
-                  resposta e o time do Indique Aí media o caso.
+                  resposta e o time do Indique Mais media o caso.
                 </p>
               )}
             </Card>

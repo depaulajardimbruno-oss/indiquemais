@@ -17,7 +17,7 @@ export default function VendasPage() {
       <Card className="mb-4 bg-brand-soft text-sm">
         <p>
           <strong>Como as vendas entram:</strong> automaticamente, quando seu sistema avisa o
-          Indique Aí (API), ou manualmente, quando você lança no painel. Venda automática é
+          Indique Mais (API), ou manualmente, quando você lança no painel. Venda automática é
           mais rápida e gera menos disputa.
         </p>
       </Card>

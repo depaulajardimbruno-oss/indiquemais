@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Card, PageHeader } from "@/components/ui";
-import { me, myCommissions, STATUS_INFO, type MyCommission } from "@/lib/indicador";
+import { CompanyBadge } from "@/components/CompanyBadge";
+import { companies, me, myCommissions, STATUS_INFO, type MyCommission } from "@/lib/indicador";
 import { brl } from "@/lib/mock";
 
 const input =
@@ -80,9 +81,25 @@ export default function ComissoesIndicadorPage() {
           </form>
         )}
         <p className="mt-3 text-xs text-muted">
-          A {me.company} paga direto na sua chave. Confira sempre se é a sua antes de indicar.
+          Cada empresa paga direto na sua chave. Confira sempre se é a sua.
         </p>
       </Card>
+
+      <ul className="mb-4 grid gap-3 sm:grid-cols-2" aria-label="Total a receber por empresa">
+        {companies.map((co) => {
+          const total = items
+            .filter((c) => c.companyId === co.id && c.status !== "confirmada" && c.status !== "contestada")
+            .reduce((s, c) => s + c.amountCents, 0);
+          return (
+            <li key={co.id}>
+              <Card className="p-4">
+                <p className="text-sm text-muted">A receber da {co.name}</p>
+                <p className="text-xl font-semibold tabular-nums">{brl(total)}</p>
+              </Card>
+            </li>
+          );
+        })}
+      </ul>
 
       <ul className="space-y-3">
         {items.map((c) => {
@@ -92,6 +109,7 @@ export default function ComissoesIndicadorPage() {
               <Card className="p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
+                    <div className="mb-1"><CompanyBadge companyId={c.companyId} /></div>
                     <p className="font-medium">{c.friend}</p>
                     <p className="text-sm text-muted">{c.offer}</p>
                   </div>

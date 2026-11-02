@@ -14,7 +14,7 @@ export type Brand = {
 };
 
 export const DEFAULT_BRAND: Brand = {
-  name: "Indique Aí",
+  name: "Indique Mais",
   tagline: "Indique, venda e ganhe.",
   logoUrl: null,
   primary: "#0f766e",

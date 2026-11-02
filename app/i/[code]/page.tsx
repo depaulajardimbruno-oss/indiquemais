@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { PrototypeBanner } from "@/components/ui";
 import { OrcamentoForm } from "@/components/OrcamentoForm";
-import { KNOWN_CODES, me } from "@/lib/indicador";
+import { companyById, KNOWN_CODES } from "@/lib/indicador";
 
 export const metadata = { title: "Peça seu orçamento" };
 
@@ -14,18 +14,19 @@ export default async function IndicadoPage({ params }: PageProps<"/i/[code]">) {
   const { code } = await params;
   const referrer = KNOWN_CODES[code.toUpperCase()];
   if (!referrer) notFound();
+  const company = companyById(referrer.companyId);
 
   return (
     <div className="flex min-h-screen flex-col">
       <PrototypeBanner />
       <main className="mx-auto w-full max-w-lg flex-1 p-4 md:py-10">
         <h1 className="text-2xl font-semibold tracking-tight">
-          {referrer.firstName} indicou a {me.company} para você
+          {referrer.firstName} indicou a {company.name} para você
         </h1>
         <p className="mt-1 mb-6 text-sm text-muted">
           Peça seu orçamento sem compromisso. Leva menos de um minuto.
         </p>
-        <OrcamentoForm company={me.company} referrerFirstName={referrer.firstName} />
+        <OrcamentoForm company={company.name} products={company.products} referrerFirstName={referrer.firstName} />
       </main>
     </div>
   );

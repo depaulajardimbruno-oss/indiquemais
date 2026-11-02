@@ -1,9 +1,9 @@
--- Identidade visual parametrizável do Indique Aí (protótipo).
+-- Identidade visual parametrizável do Indique Mais (protótipo).
 -- Rode no SQL Editor do Supabase.
 
 create table if not exists public.brand_settings (
   id             int primary key default 1,
-  name           text not null default 'Indique Aí',
+  name           text not null default 'Indique Mais',
   tagline        text not null default 'Indique, venda e ganhe.',
   logo_url       text,
   color_primary  text not null default '#0f766e',

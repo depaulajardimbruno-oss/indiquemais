@@ -79,6 +79,10 @@ const FAQ = [
     a: "Nesta fase de testes, sim: indicam os clientes que a empresa parceira convidou. Depois, a ideia é abrir para mais pessoas.",
   },
   {
+    q: "Posso indicar mais de uma empresa?",
+    a: "Pode. Se você é cliente de duas empresas parceiras, tem um link para cada uma e um só painel. Cada indicação e cada comissão mostra de qual empresa vem, e cada empresa paga a sua parte.",
+  },
+  {
     q: "E se meu amigo não usar o meu link?",
     a: "Sem problema. Ao pedir o orçamento, ele diz que foi indicado por você, com seu nome e telefone. Você recebe um aviso para confirmar. Sem a sua confirmação, a indicação não vale.",
   },
@@ -237,6 +241,7 @@ export default async function Home() {
                 <p className="font-bold">Carlos M.</p>
                 <p className="mb-4 text-sm text-muted">Envidraçamento de sacada</p>
                 <StageProgress stage="fechou" />
+                <p className="mt-3 text-sm text-muted">Você pode acompanhar indicações de várias empresas no mesmo painel, cada uma com seu link e sua comissão.</p>
               </div>
               <figcaption className="mt-3 text-center text-sm text-muted">
                 Exemplo de como você acompanha uma indicação

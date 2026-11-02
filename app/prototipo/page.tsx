@@ -2,14 +2,14 @@ import Link from "next/link";
 import { Building2, FileText, LogIn, UserRound } from "lucide-react";
 import { getBrand } from "@/lib/brand";
 import { PrototypeBanner } from "@/components/ui";
-import { me } from "@/lib/indicador";
+import { companies } from "@/lib/indicador";
 
 const SCREENS = [
   {
     href: "/empresa",
     icon: Building2,
     title: "Painel da empresa",
-    text: `Como a ${me.company} acompanha ofertas, vendas e comissões.`,
+    text: "Como a empresa piloto (Soulglass) acompanha ofertas, vendas e comissões.",
   },
   {
     href: "/entrar",
@@ -24,7 +24,7 @@ const SCREENS = [
     text: "O cliente que indica: link, indicações, etapas e comissões.",
   },
   {
-    href: `/i/${me.code}`,
+    href: `/i/${companies[0].code}`,
     icon: FileText,
     title: "Página do amigo indicado (pelo link)",
     text: "O que quem recebe o link vê ao pedir orçamento.",
@@ -51,7 +51,7 @@ export default async function Prototipo() {
         <h1 className="mt-4 text-3xl font-semibold tracking-tight">{brand.name}: telas do protótipo</h1>
         <p className="mt-1 text-muted">{brand.tagline}</p>
         <p className="mt-6 mb-3 text-sm font-medium">
-          Protótipo com a empresa piloto {me.company}. Escolha uma tela:
+          Protótipo com a empresa piloto Soulglass. Escolha uma tela:
         </p>
         <ul className="space-y-3">
           {SCREENS.map(({ href, icon: Icon, title, text }) => (

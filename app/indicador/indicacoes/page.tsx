@@ -1,4 +1,5 @@
 import { Card, PageHeader } from "@/components/ui";
+import { CompanyBadge } from "@/components/CompanyBadge";
 import { StageProgress } from "@/components/StageProgress";
 import { referrals } from "@/lib/indicador";
 import { shortDate } from "@/lib/mock";
@@ -14,7 +15,7 @@ export default function IndicacoesPage() {
       />
       <p className="mb-4 rounded-brand bg-brand-soft p-3 text-xs text-muted">
         Para proteger a privacidade de quem você indicou, mostramos só o primeiro nome e a etapa.
-        Endereço e valor do orçamento ficam entre ele e a Soulglass.
+        Endereço e valor do orçamento ficam entre ele e a empresa.
       </p>
       <ul className="space-y-3">
         {referrals.map((r) => (
@@ -22,6 +23,7 @@ export default function IndicacoesPage() {
             <Card className="p-4">
               <div className="mb-3 flex items-start justify-between gap-3">
                 <div>
+                  <div className="mb-1"><CompanyBadge companyId={r.companyId} /></div>
                   <p className="font-medium">{r.friend}</p>
                   <p className="text-xs text-muted">
                     {r.offer} · {shortDate(r.date)}

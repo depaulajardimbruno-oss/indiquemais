@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getBrand } from "@/lib/brand";
-import { me } from "@/lib/indicador";
+import { companies, me } from "@/lib/indicador";
 import { IndicadorNav } from "@/components/IndicadorNav";
 import { PrototypeBanner } from "@/components/ui";
 
@@ -20,7 +20,7 @@ export default async function IndicadorLayout({ children }: LayoutProps<"/indica
           <IndicadorNav />
           <div className="text-right text-xs leading-tight">
             <p className="font-medium">{me.name}</p>
-            <p className="text-muted">Cliente {me.company}</p>
+            <p className="text-muted">Cliente de {companies.length} empresas</p>
           </div>
         </div>
       </header>
