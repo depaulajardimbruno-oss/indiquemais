@@ -21,6 +21,8 @@ insert into auth.users (id,email,raw_user_meta_data) values
 update public.profiles set phone='(19) 90000-1234', pix_key='marina@x.com', pix_key_type='email' where id='00000000-0000-0000-0000-0000000000b1';
 insert into public.platform_admins values ('00000000-0000-0000-0000-00000000000a');
 insert into public.companies (id,name) values ('c0000000-0000-0000-0000-000000000001','Soulglass'),('c0000000-0000-0000-0000-000000000002','Casa Nova');
+-- Neste teste o Indiki+ paga sem exigir o repasse prévio da empresa (o repasse tem teste próprio em billing_tax.sql)
+update public.platform_settings set value='false' where key='require_repasse_before_payout';
 -- Soulglass usa o plano sem limites neste teste (os limites têm teste próprio em plans_seals.sql)
 update public.company_plan_history set ends_at = now() where company_id='c0000000-0000-0000-0000-000000000001' and ends_at is null;
 insert into public.company_plan_history (company_id, plan_code, platform_fee_bps) values ('c0000000-0000-0000-0000-000000000001','avancado_mais',50);

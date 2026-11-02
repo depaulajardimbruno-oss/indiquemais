@@ -21,11 +21,12 @@ select public.admin_save_plan('avancado','Avançado',null,3,29900,60,200,null,5,
 reset role;
 select 'faturas geradas: ' || public.generate_invoices(date_trunc('month', now())::date, true);
 select pg_temp.expect_eq('gerar de novo não duplica', public.generate_invoices(date_trunc('month', now())::date, true)::text, '0');
-select pg_temp.expect_eq('3 faturas: 2 mensalidades + taxa sobre vendas da Soulglass',
-  (select count(*) filter (where kind='mensalidade') || '+' || count(*) filter (where kind='taxa_vendas') from public.invoices), '2+1');
+select pg_temp.expect_eq('4 faturas: 2 mensalidades + taxa sobre vendas + repasse de comissões',
+  (select count(*) filter (where kind='mensalidade') || '+' || count(*) filter (where kind='taxa_vendas') || '+' || count(*) filter (where kind='repasse_comissoes') from public.invoices), '2+1+1');
+select pg_temp.expect_eq('repasse = soma das comissões liberadas', (select amount_cents::text from public.invoices where kind='repasse_comissoes'), (select sum(amount_cents)::text from public.commissions where status='liberada'));
 select pg_temp.expect_eq('taxa = 0,5% de 38.500,00 (R$ 192,50)', (select amount_cents::text from public.invoices where kind='taxa_vendas'), '19250');
-select pg_temp.expect_eq('itens da taxa somam o valor da fatura', (select (sum(amount_cents) = (select amount_cents from public.invoices where kind='taxa_vendas'))::text from public.invoice_items), 'true');
-select pg_temp.expect_eq('numeração sequencial', (select string_agg(number, ',' order by number) from public.invoices), 'F-2026-000001,F-2026-000002,F-2026-000003');
+select pg_temp.expect_eq('itens da taxa somam o valor da fatura', (select (sum(amount_cents) = (select amount_cents from public.invoices where kind='taxa_vendas'))::text from public.invoice_items where referral_id is not null), 'true');
+select pg_temp.expect_eq('numeração sequencial', (select string_agg(number, ',' order by number) from public.invoices), 'F-2026-000001,F-2026-000002,F-2026-000003,F-2026-000004');
 select pg_temp.expect_eq('mês em andamento sem pedido explícito não cobra taxa', public.generate_invoices(date_trunc('month', now())::date, false)::text, '0');
 
 -- cada um vê só o seu
@@ -111,22 +112,34 @@ reset role;
 select pg_temp.expect_eq('R$ 1.000,00: IRRF 15% e INSS 11%', (select irrf_cents || '/' || inss_cents from public.compute_withholding(100000)), '15000/11000');
 select pg_temp.expect_eq('abaixo da base mínima: nada retido', (select irrf_cents || '/' || inss_cents from public.compute_withholding(5000)), '0/0');
 
-select '=== 28. Pagamento de comissão com retenção e CPF obrigatório';
+select '=== 28. Repasse da empresa e pagamento ao indicador (com retenção e CPF)';
 select pg_temp.expect_eq('comissões já pagas entraram no registro', (select count(*)::text from public.commission_payments), (select count(*)::text from public.commissions where status in ('paga','confirmada','contestada')));
 select pg_temp.expect_eq('há comissão liberada esperando o pagamento', (select (count(*) >= 1)::text from public.commissions where status='liberada'), 'true');
-update public.platform_settings set value='true' where key='require_cpf_for_payout';
+update public.platform_settings set value='true' where key in ('require_cpf_for_payout','require_repasse_before_payout');
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-00000000000a',false); set role authenticated;
+select public.admin_pay_month(current_date) is not null as rodou \gset
+reset role;
+select pg_temp.expect_eq('empresa ainda não repassou: ninguém é pago', (select count(*)::text from public.commissions where status='liberada' and batch_id is not null), '0');
+select pg_temp.expect_eq('comissão continua liberada', (select (count(*) >= 1)::text from public.commissions where status='liberada'), 'true');
+-- o indicador vê o motivo
+select l.user_id as ind from public.commissions c join public.referrer_links l on l.id=c.link_id where c.status='liberada' limit 1 \gset
+select set_config('request.jwt.claim.sub', :'ind', false); set role authenticated;
+select 'indicador vê: ' || funding_note from public.indicator_commission_funding;
+reset role;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-00000000000a',false); set role authenticated;
+select 'painel de repasses pendentes: ' || company_name || ' ' || commissions || ' comissão(ões), ' || amount_cents from public.admin_pending_repasse;
+-- a empresa paga o repasse
+select 'recibo do repasse: ' || public.admin_record_payment((select id from public.invoices where kind='repasse_comissoes' and status='aberta' limit 1), 'pix', 'E2E-REPASSE');
+reset role;
+select pg_temp.expect_eq('comissão marcada como repassada', (select funded::text from public.commission_funding where commission_id = (select id from public.commissions where status='liberada' limit 1)), 'true');
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-00000000000a',false); set role authenticated;
 select pg_temp.expect_fail('pagar mês com indicador sem CPF', $$select public.admin_pay_month(current_date)$$);
 reset role;
 select pg_temp.expect_eq('bloqueio não deixou pagamento pela metade', (select count(*)::text from public.commissions where status='liberada' and batch_id is not null), '0');
-select l.user_id as ind from public.commissions c join public.referrer_links l on l.id=c.link_id where c.status='liberada' limit 1 \gset
 select set_config('request.jwt.claim.sub', :'ind', false); set role authenticated;
 select public.indicator_save_tax_profile('111.444.777-35','Indicador de Teste','Rua B, 20');
 reset role;
-select count(*) as faltam from public.commissions c join public.referrer_links l on l.id=c.link_id
- where c.status='liberada' and not exists (select 1 from public.indicator_tax_profiles t where t.user_id=l.user_id) \gset
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-00000000000a',false); set role authenticated;
-select case when :faltam = 0 then 'todos com CPF' else 'ainda faltam ' || :faltam || ' CPFs' end;
 select 'mês pago: ' || public.admin_pay_month(current_date);
 reset role;
 select pg_temp.expect_eq('liberadas viraram pagas', (select count(*)::text from public.commissions where status='liberada'), '0');
@@ -166,3 +179,14 @@ reset role;
 select pg_temp.expect_fail('dono do banco altera informe', $$update public.income_statements set gross_cents = 0$$);
 select pg_temp.expect_fail('dono do banco apaga informe', $$delete from public.income_statements$$);
 select pg_temp.expect_eq('auditoria registra emissão de informe', (select (count(*) > 0)::text from public.audit_log where table_name='income_statements'), 'true');
+
+select '=== 30. Repasse: regras finas';
+select pg_temp.expect_eq('repasse não é cobrado duas vezes', public.generate_invoices(date_trunc('month', now())::date, true)::text, '0');
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-00000000000a',false); set role authenticated;
+select pg_temp.expect_eq('painel separa receita do repasse', (select (repasse_received_cents > 0 and received_cents = 69150)::text from public.admin_billing_overview), 'true');
+reset role;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a1',false); set role authenticated;
+select pg_temp.expect_eq('empresa vê quanto repassou e quanto pagou de taxas', (select (repasse_paid_cents > 0 and fees_paid_cents = 69150)::text from public.company_annual_payments), 'true');
+select pg_temp.expect_fail('empresa lê funding de comissões', 'select * from public.commission_funding');
+reset role;
+select pg_temp.expect_eq('faturas pagas em dia contam para o selo', (select raw_value::text from public.company_seal_metrics('c0000000-0000-0000-0000-000000000001') where criterion='fee_on_time'), '3');

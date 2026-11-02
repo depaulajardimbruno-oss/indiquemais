@@ -116,10 +116,21 @@ antes da venda fechar.
 - **Informe de rendimentos** (`income_statements`): por indicador e ano, **versionado** (mudou valor ou CPF, nasce a versão 2 e a 1 fica guardada).
   O indicador vê o seu; a visão `admin_tax_pending` lista quem recebeu mas ainda não tem CPF.
 
+### Fluxo do dinheiro (migração 8) — como no PDF
+1. A empresa fecha a venda e a comissão fica **liberada** (obra instalada + carência).
+2. O Indiki+ gera as faturas: **taxa do plano sobre a venda** (receita do Indiki+) e **repasse de comissões** (dinheiro de passagem,
+   não é receita). A taxa é cobrada **por cima** da comissão: a empresa paga comissão cheia + taxa; o indicador recebe a comissão cheia.
+3. A empresa paga; o administrador confirma e o **recibo** sai na hora.
+4. No fechamento do mês, `admin_pay_month` paga o indicador **somente das comissões cujo repasse já foi pago**
+   (opção `require_repasse_before_payout`, ligada). As demais ficam liberadas, e o indicador vê "aguardando o repasse da empresa".
+5. Cada pagamento registra bruto, retenções e líquido; o **Indiki+ é a fonte pagadora** (retém, emite o informe e informa a Receita).
+- `admin_pending_repasse`: quanto está esperando repasse por empresa. `admin_billing_overview`: receita separada do repasse.
+- O critério de selo "faturas pagas em dia" agora tem medição (fica desativado até você ligar).
+
 ### O que o banco NÃO resolve (precisa de contador e advogado)
 Emissão de nota fiscal de serviço; alíquotas reais de IRRF e INSS (o imposto de renda usa tabela progressiva mensal); dados da empresa
 emissora (razão social e CNPJ ficam em `platform_settings`); envio mensal das informações à Receita (a DIRF acabou em 2025; hoje é
-eSocial e EFD-Reinf); e se o Indiki+ ficar responsável por receber das empresas e repassar aos indicadores, o enquadramento disso.
+eSocial e EFD-Reinf); como o Indiki+ recebe das empresas e paga os indicadores, ele é a fonte pagadora e o enquadramento disso (inclusive o tratamento do repasse, que não é receita) deve ser confirmado com o contador antes de cobrar.
 
 ## Taxa do Indiki+
 Percentual do **plano vigente no dia em que a venda fechou** (`company_plan_history`), aplicado ao valor total das vendas
