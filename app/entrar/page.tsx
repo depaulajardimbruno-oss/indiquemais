@@ -59,6 +59,10 @@ export default function EntrarPage() {
                 Criar conta e indicar é gratuito. Você recebe um link ou código exclusivo para
                 compartilhar.
               </p>
+              <p className="mt-3 text-center text-sm text-muted">
+                Cliente de uma empresa parceira e ainda sem acesso?{" "}
+                <Link href="/cadastro" className="font-semibold text-brand">Peça seu acesso</Link>
+              </p>
             </form>
           ) : (
             <div className="text-center">

@@ -178,7 +178,7 @@ export default async function Home() {
                 ganha uma comissão. Simples, automático e transparente.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/entrar" className={btnPrimary}>
+                <Link href="/cadastro" className={btnPrimary}>
                   Quero indicar e ganhar
                 </Link>
                 <a href="#empresas" className={btnSecondary}>
@@ -390,7 +390,7 @@ export default async function Home() {
               Pronto para transformar indicações em oportunidades? Cadastre-se e comece a ganhar.
             </h2>
             <Link
-              href="/entrar"
+              href="/cadastro"
               className="inline-flex min-h-12 items-center justify-center rounded-full bg-accent px-7 py-3 text-base font-bold text-ink hover:brightness-95"
             >
               Entrar para indicar

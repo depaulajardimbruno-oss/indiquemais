@@ -15,7 +15,19 @@ const SCREENS = [
     href: "/entrar",
     icon: LogIn,
     title: "Entrar como indicador",
-    text: "Tela de acesso por link no e-mail, sem senha. Só clientes convidados.",
+    text: "Tela de acesso por link no e-mail, sem senha.",
+  },
+  {
+    href: "/cadastro",
+    icon: UserRound,
+    title: "Cliente pede acesso pelo site",
+    text: "O cliente se cadastra e a empresa libera o link dele.",
+  },
+  {
+    href: "/empresa/indicadores",
+    icon: Building2,
+    title: "Empresa libera indicadores",
+    text: "A empresa cadastra o cliente, gera código e link, e responde pedidos do site.",
   },
   {
     href: "/indicador",

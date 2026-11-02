@@ -16,10 +16,10 @@ export default function NovaOfertaPage() {
     return (
       <Card className="mx-auto mt-10 max-w-md text-center">
         <CheckCircle2 className="mx-auto text-brand" size={40} aria-hidden />
-        <h1 className="mt-3 text-xl font-semibold">Oferta enviada para aprovação</h1>
+        <h1 className="mt-3 text-xl font-semibold">Produto cadastrado</h1>
         <p className="mt-1 text-sm text-muted">
-          No sistema real, o time do Indiki+ revisa a oferta antes de ela aparecer para os
-          indicadores. Neste protótipo, nada é salvo.
+          No sistema real, o produto fica ativo na hora, e mudar a comissão vale só para vendas
+          novas: o que já foi vendido mantém o valor combinado. Neste protótipo, nada é salvo.
         </p>
         <Link
           href="/empresa/ofertas"

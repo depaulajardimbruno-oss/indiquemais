@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Tag, ShoppingBag, Wallet } from "lucide-react";
+import { LayoutDashboard, Tag, ShoppingBag, Wallet, Users } from "lucide-react";
 
 const ITEMS = [
   { href: "/empresa", label: "Visão geral", icon: LayoutDashboard },
-  { href: "/empresa/ofertas", label: "Ofertas", icon: Tag },
+  { href: "/empresa/ofertas", label: "Produtos", icon: Tag },
+  { href: "/empresa/indicadores", label: "Indicadores", icon: Users },
   { href: "/empresa/vendas", label: "Vendas", icon: ShoppingBag },
   { href: "/empresa/comissoes", label: "Comissões", icon: Wallet },
 ];
@@ -43,7 +44,7 @@ export function BottomNav() {
   const path = usePathname();
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-10 grid grid-cols-4 border-t border-line bg-white md:hidden"
+      className="fixed inset-x-0 bottom-0 z-10 grid grid-cols-5 border-t border-line bg-white md:hidden"
       aria-label="Navegação da empresa"
     >
       {ITEMS.map(({ href, label, icon: Icon }) => {
