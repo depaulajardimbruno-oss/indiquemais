@@ -46,12 +46,13 @@ Regras de ligação que o banco garante (chaves compostas, não dá para furar):
 |---|---|---|
 | Visitante (sem login) | Produtos ativos para o formulário | Só **pedir orçamento** (função com consentimento LGPD) |
 | Indicador | Só as **suas** indicações e comissões, com o amigo reduzido ("Carla M."), sem telefone, endereço ou valor da venda | Só **confirmar recebimento** (recebi / não recebi), **aceitar ou recusar** indicação declarada em seu nome, e **sua chave PIX** |
-| Empresa | Só as indicações e comissões **da sua empresa** (sem a chave PIX do indicador) | Só a **etapa** da indicação (uma por vez, e informa o valor da venda ao fechar) |
+| Empresa (operador) | Só as indicações e comissões **da sua empresa** (sem a chave PIX do indicador) | Só a **etapa** da indicação (uma por vez, e informa o valor da venda ao fechar) |
+| Empresa (administrador) | O mesmo | Além da etapa: **cadastra, edita e arquiva seus produtos** e define a comissão (valor fixo ou porcentagem). Mudança vale só para vendas futuras |
 | Indiki+ (admin) | Tudo | Libera comissões, fecha o mês, resolve disputas |
 
 Como funciona por baixo: as telas **não escrevem nas tabelas**. O papel logado só tem leitura (filtrada por RLS)
 e chama funções que validam a regra: `company_set_referral_stage`, `indicator_respond_commission`,
-`indicator_answer_declared`, `indicator_update_payment_info`, `submit_quote_request`,
+`indicator_answer_declared`, `indicator_update_payment_info`, `company_save_offer`, `company_archive_offer`, `submit_quote_request`,
 `admin_release_due_commissions`, `admin_pay_month`, `admin_resolve_dispute`.
 
 ## Ciclo de uma comissão
@@ -64,7 +65,10 @@ e chama funções que validam a regra: `company_set_referral_stage`, `indicator_
 `companies.platform_fee_bps` (100 = 1%) sobre o valor das vendas já fechadas. Por isso o valor da venda
 é obrigatório ao marcar "fechou". A visão `company_platform_fees` calcula o total.
 
-## Decisões em aberto (precisam do cliente)
-1. **Quem cadastra produtos e regras de comissão?** Hoje só o Indiki+ (a empresa só mexe na etapa, como pedido).
-2. **Dados pessoais (LGPD):** o telefone do amigo fica também no log de auditoria, visível só ao admin. Falta a rotina de anonimização a pedido do titular.
-3. **Ambientes:** teste, homologação e produção hoje compartilham o mesmo Supabase. Antes de dados reais, separar (um projeto por ambiente).
+## Decisões tomadas
+- **Um único ambiente de banco** (Supabase `indiquemais`), compartilhado por teste, homologação e produção. Como os três usam os mesmos dados, os dados de teste ficam misturados com os reais: usar empresas e indicadores de teste claramente marcados e limpar (arquivar) antes de operar com clientes reais.
+- **A empresa cadastra os próprios produtos e a regra de comissão** (fixa em reais ou porcentagem). Trava de segurança: porcentagem acima de 50% exige validação com o Indiki+.
+
+## Decisões em aberto
+1. **Dados pessoais (LGPD):** o telefone do amigo fica também no log de auditoria, visível só ao admin. Falta a rotina de anonimização a pedido do titular.
+2. **Quem é o primeiro administrador da plataforma** (cadastrar em `platform_admins`).

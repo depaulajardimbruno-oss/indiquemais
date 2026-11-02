@@ -13,6 +13,7 @@
 --  - Indicador (cliente/profissional): vê só as próprias indicações e comissões
 --    e confirma se recebeu ou não.
 --  - Empresa (membro): vê as indicações da sua empresa e SÓ muda a etapa.
+--    Empresa (administrador): também cadastra seus produtos e a regra de comissão.
 --  - Plataforma (admin Indiki+): fecha o mês, registra pagamento, resolve disputas.
 --
 -- Rodar no SQL Editor do Supabase, uma vez por projeto/ambiente.
@@ -496,6 +497,61 @@ begin
   end if;
 end $$;
 
+-- EMPRESA (administrador da empresa): cadastra ou edita produto e regra de comissão.
+-- Mudar a regra vale só para vendas futuras: a comissão já criada guarda o valor da época.
+create or replace function public.company_save_offer(
+  p_company uuid,
+  p_offer uuid,                              -- null = novo produto
+  p_name text,
+  p_description text,
+  p_type public.commission_type,             -- 'fixed' (valor fixo) ou 'percent' (porcentagem)
+  p_value int,                               -- fixed: centavos | percent: pontos-base (500 = 5%)
+  p_grace_days int default 30,
+  p_active boolean default true
+) returns uuid
+language plpgsql security definer set search_path = '' as $$
+declare v_id uuid;
+begin
+  if not (public.is_platform_admin() or exists (
+        select 1 from public.company_members
+         where company_id = p_company and user_id = auth.uid() and role = 'admin')) then
+    raise exception 'Só administradores da empresa cadastram produtos.' using errcode = 'insufficient_privilege';
+  end if;
+  if p_value is null or p_value <= 0 then raise exception 'Informe o valor da comissão.'; end if;
+  if p_type = 'percent' and p_value > 10000 then raise exception 'A porcentagem não pode passar de 100%%.'; end if;
+  if p_type = 'percent' and p_value > 5000 then raise exception 'Porcentagem acima de 50%% precisa ser validada com o Indiki+.'; end if;
+
+  if p_offer is null then
+    insert into public.offers (company_id, name, description, commission_type, commission_value, grace_days, active)
+    values (p_company, btrim(p_name), p_description, p_type, p_value, coalesce(p_grace_days, 30), coalesce(p_active, true))
+    returning id into v_id;
+  else
+    update public.offers
+       set name = btrim(p_name), description = p_description, commission_type = p_type,
+           commission_value = p_value, grace_days = coalesce(p_grace_days, grace_days),
+           active = coalesce(p_active, active)
+     where id = p_offer and company_id = p_company and archived_at is null
+    returning id into v_id;
+    if v_id is null then raise exception 'Produto não encontrado nesta empresa.'; end if;
+  end if;
+  return v_id;
+end $$;
+
+-- EMPRESA (administrador): tira o produto de circulação. As indicações antigas continuam ligadas a ele.
+create or replace function public.company_archive_offer(p_offer uuid) returns void
+language plpgsql security definer set search_path = '' as $$
+declare v_company uuid;
+begin
+  select company_id into v_company from public.offers where id = p_offer;
+  if v_company is null then raise exception 'Produto não encontrado.'; end if;
+  if not (public.is_platform_admin() or exists (
+        select 1 from public.company_members
+         where company_id = v_company and user_id = auth.uid() and role = 'admin')) then
+    raise exception 'Só administradores da empresa.' using errcode = 'insufficient_privilege';
+  end if;
+  update public.offers set archived_at = now(), active = false where id = p_offer and archived_at is null;
+end $$;
+
 -- INDICADOR: confirma (ou não) uma indicação que um amigo declarou em nome dele.
 create or replace function public.indicator_answer_declared(p_referral uuid, p_accept boolean)
 returns void
@@ -754,6 +810,8 @@ grant select on public.public_offers to anon, authenticated;
 grant execute on function public.submit_quote_request(text, text, uuid, boolean, text, text, uuid, text, text) to anon, authenticated;
 grant execute on function public.is_platform_admin(), public.is_company_member(uuid), public.short_name(text) to authenticated;
 grant execute on function public.company_set_referral_stage(uuid, public.referral_stage, int, text) to authenticated;
+grant execute on function public.company_save_offer(uuid, uuid, text, text, public.commission_type, int, int, boolean) to authenticated;
+grant execute on function public.company_archive_offer(uuid) to authenticated;
 grant execute on function public.indicator_answer_declared(uuid, boolean) to authenticated;
 grant execute on function public.indicator_respond_commission(uuid, boolean, text) to authenticated;
 grant execute on function public.indicator_update_payment_info(text, text, text) to authenticated;

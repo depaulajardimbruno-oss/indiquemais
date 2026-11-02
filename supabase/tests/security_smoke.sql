@@ -146,3 +146,19 @@ select 'taxa Soulglass: vendas=' || sales_cents || ' taxa=' || fee_cents from pu
 reset role;
 select 'histórico: ' || string_agg(coalesce(h.from_stage::text,'-') || '>' || h.to_stage::text, ' | ' order by h.id) from public.referral_stage_history h join public.referrals r on r.id=h.referral_id where r.friend_name like 'Carla%';
 select 'auditoria: ' || count(*) from public.audit_log;
+
+\echo === 11. Empresa cadastra produto e regra
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a1',false); set role authenticated;
+select 'produto novo (porcentagem 8%): ' || (public.company_save_offer('c0000000-0000-0000-0000-000000000001', null, 'Guarda-corpo', 'Vidro', 'percent', 800, 30, true) is not null);
+select pg_temp.expect_fail('percentual acima de 100%', $$select public.company_save_offer('c0000000-0000-0000-0000-000000000001', null, 'X', null, 'percent', 20000)$$);
+select pg_temp.expect_fail('comissão zero', $$select public.company_save_offer('c0000000-0000-0000-0000-000000000001', null, 'Y', null, 'fixed', 0)$$);
+select pg_temp.expect_fail('cadastrar em outra empresa', $$select public.company_save_offer('c0000000-0000-0000-0000-000000000002', null, 'Z', null, 'fixed', 100)$$);
+select pg_temp.expect_fail('editar produto de outra empresa', $$select public.company_save_offer('c0000000-0000-0000-0000-000000000001', '0f000000-0000-0000-0000-000000000003', 'Z', null, 'fixed', 100)$$);
+select pg_temp.expect_fail('insert direto em offers', $$insert into public.offers(company_id,name,commission_type,commission_value) values ('c0000000-0000-0000-0000-000000000001','W','fixed',1)$$);
+select public.company_save_offer('c0000000-0000-0000-0000-000000000001', '0f000000-0000-0000-0000-000000000001', 'Sacada', 'Atualizado', 'fixed', 35000, 30, true);
+select public.company_archive_offer((select id from public.offers where name = 'Guarda-corpo'));
+select 'comissão antiga continua 30000: ' || amount_cents from public.company_commissions limit 1;
+reset role;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000b1',false); set role authenticated;
+select pg_temp.expect_fail('indicador cadastra produto', $$select public.company_save_offer('c0000000-0000-0000-0000-000000000001', null, 'Q', null, 'fixed', 100)$$);
+reset role;
