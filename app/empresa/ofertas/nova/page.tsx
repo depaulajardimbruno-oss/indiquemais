@@ -96,8 +96,8 @@ export default function NovaOfertaPage() {
             </label>
           </div>
           <p className="text-xs text-muted">
-            A comissão só fica liberada para pagamento depois da carência, para cobrir
-            devoluções e cancelamentos.
+            A comissão só é liberada depois que a obra for instalada e paga e o prazo de
+            carência passar, para cobrir cancelamentos e devoluções.
           </p>
         </Card>
 

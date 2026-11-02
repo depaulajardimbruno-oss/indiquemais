@@ -43,7 +43,7 @@ export const offers: Offer[] = [
     name: "Envidraçamento de sacada",
     description:
       "Cortina de vidro para fechar a sacada do apartamento, com medição e instalação inclusas.",
-    commissionLabel: "3% da venda",
+    commissionLabel: "R$ 300,00 fixo por venda fechada",
     graceDays: 30,
     active: true,
     referrals: 64,
@@ -53,7 +53,7 @@ export const offers: Offer[] = [
     id: "o2",
     name: "Box de banheiro",
     description: "Box em vidro temperado sob medida, com instalação.",
-    commissionLabel: "5% da venda",
+    commissionLabel: "R$ 100,00 fixo por venda fechada",
     graceDays: 15,
     active: true,
     referrals: 142,
@@ -63,7 +63,7 @@ export const offers: Offer[] = [
     id: "o3",
     name: "Guarda-corpo de vidro",
     description: "Guarda-corpo para escadas, sacadas e terraços, com instalação.",
-    commissionLabel: "4% da venda",
+    commissionLabel: "R$ 200,00 fixo por venda fechada",
     graceDays: 30,
     active: true,
     referrals: 38,
@@ -93,14 +93,14 @@ export const sales: Sale[] = [
 ];
 
 export const commissions: Commission[] = [
-  { id: "c1", saleId: "v1", offerName: "Box de banheiro", referrer: "Marina Souza", pixKey: "marina***@email.com", amountCents: 14000, status: "pendente", releaseDate: "2026-11-14" },
-  { id: "c2", saleId: "v2", offerName: "Envidraçamento de sacada", referrer: "Rafael Lima", pixKey: "***.482.***-12", amountCents: 55500, status: "pendente", releaseDate: "2026-11-28" },
-  { id: "c3", saleId: "v3", offerName: "Guarda-corpo de vidro", referrer: "Marina Souza", pixKey: "marina***@email.com", amountCents: 37600, status: "pendente", releaseDate: "2026-11-26" },
-  { id: "c4", saleId: "v4", offerName: "Box de banheiro", referrer: "Camila Ferraz", pixKey: "(19) 9****-3321", amountCents: 15500, status: "liberada", releaseDate: "2026-10-27" },
-  { id: "c5", saleId: "v5", offerName: "Envidraçamento de sacada", referrer: "Diego Alves", pixKey: "diego***@email.com", amountCents: 66000, status: "liberada", releaseDate: "2026-10-28" },
-  { id: "c6", saleId: "v6", offerName: "Guarda-corpo de vidro", referrer: "Rafael Lima", pixKey: "***.482.***-12", amountCents: 35200, status: "contestada", releaseDate: "2026-10-20" },
-  { id: "c7", saleId: "v7", offerName: "Envidraçamento de sacada", referrer: "Camila Ferraz", pixKey: "(19) 9****-3321", amountCents: 49500, status: "paga", releaseDate: "2026-10-10" },
-  { id: "c8", saleId: "v8", offerName: "Box de banheiro", referrer: "Diego Alves", pixKey: "diego***@email.com", amountCents: 13250, status: "paga", releaseDate: "2026-09-20" },
+  { id: "c1", saleId: "v1", offerName: "Box de banheiro", referrer: "Marina Souza", pixKey: "marina***@email.com", amountCents: 10000, status: "pendente", releaseDate: "2026-11-14" },
+  { id: "c2", saleId: "v2", offerName: "Envidraçamento de sacada", referrer: "Rafael Lima", pixKey: "***.482.***-12", amountCents: 30000, status: "pendente", releaseDate: "2026-11-28" },
+  { id: "c3", saleId: "v3", offerName: "Guarda-corpo de vidro", referrer: "Marina Souza", pixKey: "marina***@email.com", amountCents: 20000, status: "pendente", releaseDate: "2026-11-26" },
+  { id: "c4", saleId: "v4", offerName: "Box de banheiro", referrer: "Camila Ferraz", pixKey: "(19) 9****-3321", amountCents: 10000, status: "liberada", releaseDate: "2026-10-27" },
+  { id: "c5", saleId: "v5", offerName: "Envidraçamento de sacada", referrer: "Diego Alves", pixKey: "diego***@email.com", amountCents: 30000, status: "liberada", releaseDate: "2026-10-28" },
+  { id: "c6", saleId: "v6", offerName: "Guarda-corpo de vidro", referrer: "Rafael Lima", pixKey: "***.482.***-12", amountCents: 20000, status: "contestada", releaseDate: "2026-10-20" },
+  { id: "c7", saleId: "v7", offerName: "Envidraçamento de sacada", referrer: "Camila Ferraz", pixKey: "(19) 9****-3321", amountCents: 30000, status: "paga", releaseDate: "2026-10-10" },
+  { id: "c8", saleId: "v8", offerName: "Box de banheiro", referrer: "Diego Alves", pixKey: "diego***@email.com", amountCents: 10000, status: "paga", releaseDate: "2026-09-20" },
 ];
 
 export const brl = (cents: number) =>
