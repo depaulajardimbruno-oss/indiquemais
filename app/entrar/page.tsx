@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { MailCheck } from "lucide-react";
 import { Card, PrototypeBanner } from "@/components/ui";
+import { hasSupabase, supabaseBrowser } from "@/lib/supabase-browser";
 
 const input =
   "mt-1 w-full rounded-brand border border-line bg-white px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand-line";
@@ -11,6 +12,20 @@ const input =
 export default function EntrarPage() {
   const [sent, setSent] = useState(false);
   const [email, setEmail] = useState("");
+  const [erro, setErro] = useState("");
+  const [enviando, setEnviando] = useState(false);
+
+  async function enviar() {
+    setErro("");
+    if (!hasSupabase) return setSent(true); // protótipo: não envia nada
+    setEnviando(true);
+    const destino = new URLSearchParams(location.search).get("destino");
+    const volta = `${location.origin}/auth/callback${destino ? `?destino=${encodeURIComponent(destino)}` : ""}`;
+    const { error } = await supabaseBrowser().auth.signInWithOtp({ email: email.trim(), options: { emailRedirectTo: volta } });
+    setEnviando(false);
+    if (error) return setErro("Não conseguimos enviar o link agora. Confira o e-mail e tente de novo em alguns minutos.");
+    setSent(true);
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -21,7 +36,7 @@ export default function EntrarPage() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                setSent(true);
+                void enviar();
               }}
             >
               <h1 className="text-xl font-semibold">Entrar ou criar conta grátis</h1>
@@ -53,8 +68,9 @@ export default function EntrarPage() {
                 type="submit"
                 className="mt-4 w-full rounded-brand bg-brand px-4 py-3 text-sm font-medium text-brand-fg hover:opacity-90"
               >
-                Enviar link de acesso
+                {enviando ? "Enviando…" : "Enviar link de acesso"}
               </button>
+              {erro && <p role="alert" className="mt-2 text-sm text-red-700">{erro}</p>}
               <p className="mt-4 rounded-brand bg-brand-soft p-3 text-xs text-muted">
                 Criar conta e indicar é gratuito. Você recebe um link ou código exclusivo para
                 compartilhar.
@@ -69,15 +85,18 @@ export default function EntrarPage() {
               <MailCheck className="mx-auto text-brand" size={40} aria-hidden />
               <h1 className="mt-3 text-xl font-semibold">Confira seu e-mail</h1>
               <p className="mt-1 text-sm text-muted">
-                No sistema real, enviaríamos o link para <strong>{email}</strong>. Neste protótipo,
-                nenhum e-mail é enviado.
+                {hasSupabase
+                  ? <>Enviamos um link para <strong>{email}</strong>. Abra no mesmo aparelho e navegador em que pediu. Vale por 1 hora.</>
+                  : <>No sistema real, enviaríamos o link para <strong>{email}</strong>. Neste protótipo, nenhum e-mail é enviado.</>}
               </p>
-              <Link
-                href="/indicador"
-                className="mt-5 inline-block rounded-brand bg-brand px-4 py-3 text-sm font-medium text-brand-fg"
-              >
-                Abrir painel de exemplo
-              </Link>
+              {!hasSupabase && (
+                <Link
+                  href="/indicador"
+                  className="mt-5 inline-block rounded-brand bg-brand px-4 py-3 text-sm font-medium text-brand-fg"
+                >
+                  Abrir painel de exemplo
+                </Link>
+              )}
             </div>
           )}
         </Card>

@@ -3,6 +3,7 @@ import { getBrand } from "@/lib/brand";
 import { Logo } from "@/components/Logo";
 import { AdminSidebar, AdminTabs } from "@/components/AdminNav";
 import { PrototypeBanner } from "@/components/ui";
+import { AdminGate } from "@/components/AdminGate";
 
 export const metadata = { title: { default: "Administração", template: "%s · Administração" } };
 
@@ -25,7 +26,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
           </div>
         </aside>
         <main className="min-w-0 flex-1 p-4 md:p-8">
-          <div className="mx-auto max-w-6xl">{children}</div>
+          <div className="mx-auto max-w-6xl"><AdminGate>{children}</AdminGate></div>
         </main>
       </div>
     </div>
