@@ -22,7 +22,9 @@ Testes locais: `supabase/tests/run_local.sh` (0 FAIL/ERROR na última rodada). D
 
 ## Site
 - Em 07/11/2026 o protótipo foi tirado do site e o banco foi limpo (sobrou só a conta admin e as configurações). O protótipo completo está guardado na branch `arquivo/prototipo-v1` (consulte com `git show arquivo/prototipo-v1:app/...`). Ao ligar cada tela real, reaproveite o layout de lá.
-- Hoje o site tem: página inicial, `/entrar`, `/auth/callback`, `/convite/[token]`, `/termos`, `/conta` e `/admin` (início com contagens reais).
+- Hoje o site tem (tudo real): página inicial; `/entrar` (e-mail e senha, esqueci a senha) e `/redefinir-senha`; `/convite/[token]` (criar conta ou entrar + cadastro completo); `/i/[code]` (amigo pede orçamento); `/termos`; `/conta`; `/admin` (início); painel `/empresa` com Início, Produtos (criar/editar com histórico da regra), Indicadores (link de convite, cadastro manual, enviar acesso por WhatsApp, pausar) e Dados da empresa.
+- Produção: empresa Soulglass cadastrada (plano Avançado+) com 1 responsável e link de convite.
+- Falta: tela de Indicações na empresa (avançar etapas, marcar fechou com contrato), painel do indicador, comissões/pagamentos, admin de empresas/planos/cobrança, SMTP próprio.
 - **Real:** login por link no e-mail (`/entrar`, `/auth/callback`) e proteção do painel `/admin` (só administradores).
 - Supabase Auth configurado: Site URL `https://indiquemais.vercel.app`; redirects `/auth/callback` na produção e em `localhost:3100`.
 
