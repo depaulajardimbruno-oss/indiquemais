@@ -26,7 +26,8 @@ Testes locais: `supabase/tests/run_local.sh` (0 FAIL/ERROR na última rodada). D
 - Produção: empresa Soulglass cadastrada (plano Avançado+) com 1 responsável e link de convite.
 - Fluxo de cadastro (07/11): empresa pede em `/cadastro-empresa` e o admin aprova em Empresas (cria a empresa e libera o responsável); indicador entra pelo convite da empresa ou pelo site em `/cadastro` (cadastro completo + escolhe empresas da vitrine). Cada empresa escolhe: só por convite, com aprovação (padrão) ou aberta. Pedidos pendentes aparecem em Indicadores da empresa. Indicador acompanha em `/conta`.
 - Admin `/admin`: visão geral (números, funil, dinheiro, por empresa), empresas (pedidos, acessos, plano, dados legais, abas), indicadores, produtos, indicações e vendas, comissões.
-- Falta: tela de Indicações na empresa (avançar etapas, marcar fechou com contrato), painel do indicador, comissões/pagamentos, admin de empresas/planos/cobrança, SMTP próprio.
+- 07/11 (noite): tela de Indicações na empresa (abas por etapa, chamar no WhatsApp, orçamento enviado, fechou com valor + contrato e prévia da comissão, instalado e pago, não fechou); painel do indicador em `/conta` (a receber, recebido, indicações com etapa, comissão e data de liberação, chave PIX, confirmar indicações declaradas, compartilhar no WhatsApp); PIX saiu do cadastro e é exigido para pagar; tela de pedido enviado para o amigo com botão para falar com a empresa.
+- Falta: pagamentos (liberar comissões, fechar o mês, pagar), admin de empresas/planos/cobrança, SMTP próprio.
 - **Real:** login por link no e-mail (`/entrar`, `/auth/callback`) e proteção do painel `/admin` (só administradores).
 - Supabase Auth configurado: Site URL `https://indiquemais.vercel.app`; redirects `/auth/callback` na produção e em `localhost:3100`.
 
