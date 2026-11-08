@@ -5,18 +5,13 @@ import {
   TrendingUp, Users, Wallet, X,
 } from "lucide-react";
 import { getBrand } from "@/lib/brand";
+import { getPlanos, pct } from "@/lib/planos";
 import { Logo } from "@/components/Logo";
 import { StageProgress } from "@/components/StageProgress";
 import lion from "@/public/brand/leao.png";
 
 export const metadata = { title: { absolute: "Indiki+ | Indicações: sua maior força de vendas" } };
 
-/** Preços públicos (mesmos do site piloto). Para mudar, altere aqui. */
-const PRECOS = [
-  { id: "mensal", nome: "Mensal", mes: 397, total: null, economia: null, destaque: false, cta: "Quero entrar no Indiki+" },
-  { id: "semestral", nome: "Semestral", mes: 297, total: 1782, economia: 600, destaque: false, cta: "Quero entrar no Indiki+" },
-  { id: "anual", nome: "Anual", mes: 197, total: 2364, economia: 2400, destaque: true, cta: "Criar meu programa de indicação" },
-] as const;
 const INCLUSO = [
   "Programa de indicação completo", "Link e código único para cada indicador", "Rastreamento automático das indicações",
   "Painel em tempo real", "Cálculo e gestão das comissões", "Área exclusiva para os indicadores", "Relatórios de desempenho",
@@ -28,7 +23,21 @@ const preto = "inline-flex min-h-12 items-center justify-center gap-2 rounded-fu
 const selo = "inline-block rounded-full bg-[#ff6600] px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-white";
 
 export default async function Home() {
-  const brand = await getBrand();
+  const [brand, planos] = await Promise.all([getBrand(), getPlanos()]);
+  const base = Math.max(...planos.map((p) => p.mesCentavos)) / 100;
+  const maiorFidelidade = Math.max(...planos.map((p) => p.meses));
+  const precos = planos.map((p) => {
+    const mes = p.mesCentavos / 100;
+    const destaque = planos.length > 1 && p.meses === maiorFidelidade;
+    return {
+      id: p.nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(),
+      nome: p.nome, mes, taxa: pct(p.taxaBps), destaque,
+      total: p.meses > 1 ? mes * p.meses : null,
+      economia: p.meses > 1 && base > mes ? (base - mes) * p.meses : null,
+      desconto: Math.round((1 - mes / base) * 100),
+      cta: destaque ? "Criar meu programa de indicação" : "Quero entrar no Indiki+",
+    };
+  });
   return (
     <div className="bg-white text-[#0a0a0a]">
       {/* Cabeçalho */}
@@ -225,16 +234,19 @@ export default async function Home() {
           <div className="mx-auto max-w-6xl px-4">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">Escolha o plano ideal para o seu negócio.</h2>
-              <p className="mt-4 text-black/60">Todos os planos têm acesso completo à plataforma.</p>
+              <p className="mt-4 text-black/60">Todos os planos têm acesso completo à plataforma. Você paga a mensalidade e uma pequena porcentagem só sobre o que vender por indicação.</p>
             </div>
             <div className="mt-12 grid items-stretch gap-6 md:grid-cols-3">
-              {PRECOS.map((p) => (
+              {precos.map((p) => (
                 <div key={p.id} className={`relative flex flex-col rounded-3xl p-8 ${p.destaque ? "bg-[#0a0a0a] text-white shadow-2xl md:-my-4 md:py-12" : "bg-white shadow-[0_10px_40px_-15px_rgba(0,0,0,0.2)]"}`}>
-                  {p.destaque && <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#ff6600] px-4 py-1 text-xs font-bold uppercase text-white">Mais popular · -50%</span>}
+                  {p.destaque && <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#ff6600] px-4 py-1 text-xs font-bold uppercase text-white">Mais popular{p.desconto > 0 ? ` · -${p.desconto}%` : ""}</span>}
                   <h3 className="text-xl font-bold">{p.nome}</h3>
                   <p className="mt-4"><span className="text-5xl font-bold tracking-tight">{brl0(p.mes)}</span><span className={p.destaque ? "text-white/60" : "text-black/50"}>/mês</span></p>
                   <p className={`mt-1 min-h-10 text-sm ${p.destaque ? "text-white/70" : "text-black/60"}`}>
-                    {p.total ? <>Total de {brl0(p.total)} · economia de <strong className="text-[#ff6600]">{brl0(p.economia!)}</strong></> : "Sem fidelidade"}
+                    {p.total ? <>Total de {brl0(p.total)}{p.economia ? <> · economia de <strong className="text-[#ff6600]">{brl0(p.economia)}</strong></> : null}</> : "Sem fidelidade"}
+                  </p>
+                  <p className={`mt-3 rounded-2xl px-4 py-2.5 text-sm ${p.destaque ? "bg-white/10" : "bg-[#fff3ea]"}`}>
+                    + <strong>{p.taxa}</strong> sobre as vendas fechadas por indicação
                   </p>
                   <ul className="mt-6 space-y-2.5 text-sm">
                     {INCLUSO.map((i) => <li key={i} className="flex gap-2"><Check size={18} className="shrink-0 text-[#ff6600]" aria-hidden />{i}</li>)}

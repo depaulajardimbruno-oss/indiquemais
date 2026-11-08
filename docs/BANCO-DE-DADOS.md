@@ -206,3 +206,10 @@ fechadas. Mudar de plano não altera vendas passadas. A visão `company_platform
 ## Migração 17: indicação repetida vira alerta
 
 - `company_register_referral` deixa de recusar cliente com indicação em andamento: o mesmo cliente pode ter mais de uma (outra compra). A tela de Indicações marca "possível duplicada" quando há outra aberta com o mesmo telefone e oferece "É duplicada: encerrar esta" (vira perdida com a nota "Indicação duplicada").
+
+## 1800 — Planos iguais aos do site piloto
+- Os 3 planos à venda viram **Mensal** (R$ 397, sem fidelidade, 1% sobre vendas), **Semestral** (R$ 297/mês, 6 meses, 0,8%) e **Anual** (R$ 197/mês, 12 meses, 0,6%). Códigos mantidos (`inicial`, `intermediario`, `avancado`).
+- Todos com o mesmo acesso: indicadores e produtos sem limite, até 5 usuários, relatório completo.
+- Nova coluna `plans.commitment_months` (fidelidade em meses).
+- `avancado_mais` desativado: reservado para um plano extra. Quem já está nele continua.
+- A página inicial lê os planos do banco (`lib/planos.ts`): mudou preço ou taxa no banco, o site atualiza em minutos.

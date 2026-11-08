@@ -16,10 +16,14 @@ grant execute on function pg_temp.expect_eq(text,text,text) to public;
 
 select '=== 14. Planos: leitura e escrita';
 set role anon;
-select pg_temp.expect_eq('visitante vê 4 planos ativos', (select count(*)::text from public.plans), '4');
+select pg_temp.expect_eq('visitante vê 3 planos ativos (Avançado+ reservado)', (select count(*)::text from public.plans), '3');
+select pg_temp.expect_eq('planos à venda', (select string_agg(name || ':' || monthly_price_cents || ':' || commitment_months || ':' || platform_fee_bps, ' ' order by sort_order) from public.plans), 'Mensal:39700:1:100 Semestral:29700:6:80 Anual:19700:12:60');
 select pg_temp.expect_fail('visitante lê histórico de planos', 'select * from public.company_plan_history');
 select pg_temp.expect_fail('visitante grava plano', $$update public.plans set platform_fee_bps = 0$$);
 reset role;
+-- Fixture: limites apertados só no banco de teste, para provar que os limites do plano são aplicados.
+update public.plans set max_active_referrers = 10, max_offers = 3, max_members = 1 where code = 'inicial';
+update public.plans set max_active_referrers = 50, max_offers = 10, max_members = 2 where code = 'intermediario';
 
 -- Casa Nova (operador a2) começa no Inicial
 select pg_temp.expect_eq('Casa Nova nasce no plano inicial', public.company_plan_code('c0000000-0000-0000-0000-000000000002'), 'inicial');

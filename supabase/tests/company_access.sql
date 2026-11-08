@@ -20,7 +20,7 @@ select pg_temp.expect_fail('CNPJ inválido', $$select public.admin_create_compan
 select public.admin_create_company('Vidraçaria X','VIDRACARIA X LTDA','11.222.333/0001-81','pequena','intermediario') as cx \gset
 select pg_temp.expect_eq('empresa nasce no plano escolhido', (select plan_code from public.admin_companies where id = :'cx'), 'intermediario');
 select pg_temp.expect_fail('CNPJ repetido', $$select public.admin_create_company('Outra','OUTRA LTDA','11222333000181')$$);
-select pg_temp.expect_eq('aparece na lista do admin', (select name || '|' || plan_name || '|' || members_count from public.admin_companies where id = :'cx'), 'Vidraçaria X|Intermediário|0');
+select pg_temp.expect_eq('aparece na lista do admin', (select name || '|' || plan_name || '|' || members_count from public.admin_companies where id = :'cx'), 'Vidraçaria X|Semestral|0');
 select public.admin_update_company_legal(:'cx','VIDRACARIA X EIRELI','11.444.777/0001-61','ativa','media');
 select pg_temp.expect_eq('dados legais corrigidos', (select legal_name || '|' || cnpj || '|' || customer_group from public.admin_companies where id = :'cx'), 'VIDRACARIA X EIRELI|11444777000161|media');
 reset role;

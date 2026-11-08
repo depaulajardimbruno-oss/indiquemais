@@ -39,11 +39,11 @@ Testes locais: `supabase/tests/run_local.sh` (0 FAIL/ERROR na última rodada). D
 4. Adicionar os endereços de teste e homologação da Vercel nos redirects do login, se for testar lá.
 5. Gateway de pagamento (Asaas / Mercado Pago) para confirmar pagamentos sozinho; hoje o admin confirma na mão.
 6. Contador: taxas reais de retenção, emissão de NFS-e, CNPJ emissor, tratamento fiscal do repasse.
-7. Definir preços dos planos, nomes e benefícios do ranking.
+7. Definir benefícios do ranking.
 8. Agendar o recálculo de selos e ranking; rotina de anonimização (LGPD).
 9. Higiene de dados: banco único mistura teste e dados reais.
 10. Troca de DNS para indikimais.com.br: adicionar o domínio na Vercel e trocar Site URL + redirects no Supabase Auth.
-11. Decidir preços: os da página (397/297/197) não batem com os planos do banco (Inicial…Avançado+).
+11. Planos (08/11): Mensal 397 (1%), Semestral 297 (0,8%), Anual 197 (0,6%) sobre as vendas por indicação; Avançado+ reservado para plano extra. Falta: cobrança da mensalidade e regra de fidelidade/cancelamento.
 
 ## Como trabalhar
 - Branches: develop → staging → main, promovendo com merge. Commits com `Co-Authored-By` e `Claude-Session`.
