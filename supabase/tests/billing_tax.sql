@@ -139,6 +139,8 @@ select pg_temp.expect_eq('bloqueio não deixou pagamento pela metade', (select c
 select set_config('request.jwt.claim.sub', :'ind', false); set role authenticated;
 select public.indicator_save_tax_profile('111.444.777-35','Indicador de Teste','Rua B, 20');
 reset role;
+-- desde a migração 15, pagar exige chave PIX
+update public.profiles set pix_key = 'pix@teste.com', pix_key_type = 'email' where pix_key is null;
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-00000000000a',false); set role authenticated;
 select 'mês pago: ' || public.admin_pay_month(current_date);
 reset role;
