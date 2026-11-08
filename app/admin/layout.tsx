@@ -1,8 +1,10 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { getBrand } from "@/lib/brand";
 import { Logo } from "@/components/Logo";
 import { AdminGate } from "@/components/AdminGate";
 import { SignOutButton } from "@/components/SignOutButton";
+import { AdminNav } from "@/components/admin/AdminNav";
 
 export const metadata = { title: { default: "Administração", template: "%s · Administração" } };
 
@@ -16,14 +18,11 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
             <Logo name={brand.name} logoUrl={brand.logoUrl} height={28} />
             <span className="rounded-full bg-accent/25 px-2 py-0.5 text-xs font-semibold text-ink">Admin</span>
           </Link>
-          <nav aria-label="Administração" className="flex items-center gap-4 text-sm font-medium">
-            <Link href="/admin" className="hover:text-brand">Início</Link>
-            <Link href="/admin/empresas" className="hover:text-brand">Empresas</Link>
-            <SignOutButton />
-          </nav>
+          <SignOutButton />
         </div>
       </header>
-      <main className="mx-auto w-full max-w-6xl flex-1 p-4 md:p-8">
+      <Suspense fallback={<div className="h-12 border-b border-line bg-white" />}><AdminNav /></Suspense>
+      <main className="mx-auto w-full min-w-0 max-w-6xl flex-1 p-4 md:p-8">
         <AdminGate>{children}</AdminGate>
       </main>
     </div>

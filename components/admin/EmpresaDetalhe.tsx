@@ -7,12 +7,17 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Card, PageHeader } from "@/components/ui";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 import { Equipe } from "@/components/Equipe";
+import { AdminComissoes, AdminIndicacoes, AdminIndicadores, AdminProdutos } from "@/components/admin/Listas";
 import { carregarOpcoes, field, maskCnpj, type AdminEmpresa, type Opcao } from "@/components/admin/Empresas";
+
+type Aba = "acessos" | "indicadores" | "produtos" | "indicacoes" | "comissoes";
+const ABAS: [Aba, string][] = [["acessos", "Acessos, plano e dados"], ["indicadores", "Indicadores"], ["produtos", "Produtos"], ["indicacoes", "Indicações e vendas"], ["comissoes", "Comissões"]];
 
 export function EmpresaDetalhe({ id }: { id: string }) {
   const router = useRouter();
   const [e, setE] = useState<AdminEmpresa | null | undefined>(undefined);
   const [ops, setOps] = useState<{ planos: Opcao[]; grupos: Opcao[] }>({ planos: [], grupos: [] });
+  const [aba, setAba] = useState<Aba>("acessos");
 
   const carregar = useCallback(async () => {
     const { data } = await supabaseBrowser().from("admin_companies").select("*").eq("id", id).maybeSingle();
@@ -28,7 +33,17 @@ export function EmpresaDetalhe({ id }: { id: string }) {
       <Link href="/admin/empresas" className="mb-3 inline-flex items-center gap-1 text-sm text-brand underline"><ArrowLeft size={14} aria-hidden /> Empresas</Link>
       <PageHeader title={e.name} subtitle={`${e.legal_name ?? ""} · CNPJ ${maskCnpj(e.cnpj ?? "")}`}
         action={<button onClick={() => { try { localStorage.setItem("indiki.empresa", e.id); } catch { /* sem armazenamento */ } router.push("/empresa"); }} className="inline-flex min-h-11 items-center gap-2 rounded-brand border border-line bg-white px-4 py-2 text-sm font-medium hover:bg-brand-soft"><ExternalLink size={16} aria-hidden /> Abrir painel da empresa</button>} />
-      <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
+      <div role="tablist" aria-label="Seções da empresa" className="mb-6 flex gap-1 overflow-x-auto border-b border-line">
+        {ABAS.map(([k, l]) => (
+          <button key={k} role="tab" aria-selected={aba === k} onClick={() => setAba(k)}
+            className={`shrink-0 border-b-2 px-3 py-2 text-sm font-medium ${aba === k ? "border-brand text-brand" : "border-transparent text-muted hover:text-ink"}`}>{l}</button>
+        ))}
+      </div>
+      {aba === "indicadores" && <AdminIndicadores companyId={e.id} />}
+      {aba === "produtos" && <AdminProdutos companyId={e.id} />}
+      {aba === "indicacoes" && <AdminIndicacoes companyId={e.id} />}
+      {aba === "comissoes" && <AdminComissoes companyId={e.id} />}
+      {aba === "acessos" && <div className="grid gap-6 lg:grid-cols-[1fr_22rem]">
         <section aria-labelledby="t-acessos">
           <h2 id="t-acessos" className="mb-3 text-lg font-semibold">Acessos ao painel</h2>
           <Equipe companyId={e.id} companyName={e.name} canEdit />
@@ -37,7 +52,7 @@ export function EmpresaDetalhe({ id }: { id: string }) {
           <Plano key={`p-${e.plan_code}`} e={e} planos={ops.planos} onSalvo={carregar} />
           <DadosLegais key={`d-${e.cnpj}-${e.status}-${e.customer_group}`} e={e} grupos={ops.grupos} onSalvo={carregar} />
         </div>
-      </div>
+      </div>}
     </>
   );
 }

@@ -11,4 +11,4 @@ $P -d postgres -c "drop database if exists t" -c "create database t" >/dev/null 
 R=$(cd "$(dirname "$0")/.." && pwd)
 $P -d t -f "$R/tests/supabase_stub.sql" >/tmp/pg/stub.err 2>&1
 for f in "$R"/migrations/*.sql; do echo "== $(basename $f)"; $P -d t -v ON_ERROR_STOP=1 -f "$f" 2>&1 | grep -i "error" ; done
-for f in "$R"/tests/security_smoke.sql "$R"/tests/plans_seals.sql "$R"/tests/groups_ranking.sql "$R"/tests/billing_tax.sql "$R"/tests/rule_snapshot.sql "$R"/tests/indicator_signup.sql "$R"/tests/company_panel.sql "$R"/tests/company_access.sql; do [ -f "$f" ] && { echo "== $(basename $f)"; $P -d t -f "$f" 2>&1 | grep -v '^$'; }; done
+for f in "$R"/tests/security_smoke.sql "$R"/tests/plans_seals.sql "$R"/tests/groups_ranking.sql "$R"/tests/billing_tax.sql "$R"/tests/rule_snapshot.sql "$R"/tests/indicator_signup.sql "$R"/tests/company_panel.sql "$R"/tests/company_access.sql "$R"/tests/admin_views.sql; do [ -f "$f" ] && { echo "== $(basename $f)"; $P -d t -f "$f" 2>&1 | grep -v '^$'; }; done

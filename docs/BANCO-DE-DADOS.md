@@ -177,3 +177,8 @@ fechadas. Mudar de plano não altera vendas passadas. A visão `company_platform
 - `company_members` deixa de ser "nunca apagar": o vínculo é removido só pelas funções acima.
 - Visões `company_team` (membros + convites pendentes) e `admin_companies`. Corrige `company_my_companies` (lia o plano por uma função sem permissão).
 - Testes: `supabase/tests/company_access.sql`.
+
+## Migração 13: painel do admin
+
+- Visões só para o admin do Indiki+ (vazias para qualquer outra pessoa): `admin_overview` (totais, funil por etapa, dinheiro), `admin_company_summary` (comparação por empresa), `admin_indicators` (todas as empresas; CPF mascarado, PIX completo porque o Indiki+ paga; comissões a liberar/liberadas/pagas), `admin_offers`, `admin_referrals` (indicações e vendas com a comissão), `admin_commissions`.
+- Testes: `supabase/tests/admin_views.sql`.
