@@ -15,11 +15,13 @@ type PorEmpresa = { id: string; name: string; status: string; plan_name: string 
 export function AdminHome() {
   const [g, setG] = useState<Geral | null>(null);
   const [emp, setEmp] = useState<PorEmpresa[] | null>(null);
+  const [pend, setPend] = useState<{ company_signups: number; indicator_requests: number } | null>(null);
 
   useEffect(() => {
     if (!hasSupabase) return;
     const sb = supabaseBrowser();
     sb.from("admin_overview").select("*").maybeSingle().then(({ data }) => setG((data as Geral) ?? {}));
+    sb.from("admin_pending").select("*").maybeSingle().then(({ data }) => setPend(data as typeof pend));
     sb.from("admin_company_summary").select("*").order("referrals_count", { ascending: false }).then(({ data }) => setEmp((data ?? []) as PorEmpresa[]));
   }, []);
 
@@ -41,6 +43,12 @@ export function AdminHome() {
   return (
     <>
       <PageHeader title="Visão geral" subtitle="Tudo o que acontece em todas as empresas do Indiki+." />
+      {pend && (pend.company_signups > 0 || pend.indicator_requests > 0) && (
+        <div className="mb-4 flex flex-wrap gap-3">
+          {pend.company_signups > 0 && <Link href="/admin/empresas" className="rounded-brand border-2 border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900">{pend.company_signups} {pend.company_signups === 1 ? "empresa pediu" : "empresas pediram"} cadastro. Aprovar ou recusar.</Link>}
+          {pend.indicator_requests > 0 && <Link href="/admin/indicadores" className="rounded-brand border border-line bg-white px-4 py-3 text-sm text-muted">{pend.indicator_requests} {pend.indicator_requests === 1 ? "pedido de indicador aguarda" : "pedidos de indicador aguardam"} as empresas</Link>}
+        </div>
+      )}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {kpis.map(([l, v, href, extra]) => (
           <Link key={l} href={href} className="rounded-brand border border-line bg-white p-4 hover:border-brand">

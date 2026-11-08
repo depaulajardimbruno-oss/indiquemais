@@ -13,6 +13,7 @@ export type Empresa = {
   address_zip: string | null; address_street: string | null; address_number: string | null; address_complement: string | null;
   address_district: string | null; address_city: string | null; address_state: string | null;
   customer_group: string | null; my_role: string; can_edit: boolean; plan_code: string | null;
+  listing_mode: "fechado" | "aprovacao" | "aberto" | null; public_description: string | null;
 };
 
 type Ctx = { empresa: Empresa; empresas: Empresa[]; trocar: (id: string) => void; recarregar: () => Promise<void> };

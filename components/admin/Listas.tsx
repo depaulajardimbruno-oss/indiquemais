@@ -79,9 +79,10 @@ const Total = ({ itens }: { itens: [string, string][] }) => (
 
 // ------------------------------------------------------------------ Indicadores
 type Ind = { id: string; company_id: string; company_name: string; full_name: string; email: string | null; phone: string | null; code: string; active: boolean;
-  has_account: boolean; registration_complete: boolean; via: string; city: string | null; state: string | null; pix_key_type: string | null; pix_key: string | null;
+  has_account: boolean; registration_complete: boolean; via: string; request_status: string; city: string | null; state: string | null; pix_key_type: string | null; pix_key: string | null;
   cpf_masked: string | null; referrals_count: number; sales_count: number; pending_cents: number; released_cents: number; paid_cents: number };
 function situacao(i: Ind) {
+  if (i.request_status === "pendente") return ["Aguardando a empresa", "bg-sky-100 text-sky-800"];
   if (!i.active) return ["Pausado", "bg-slate-100 text-slate-600"];
   if (!i.has_account) return ["Sem conta", "bg-amber-100 text-amber-800"];
   if (!i.registration_complete) return ["Cadastro incompleto", "bg-amber-100 text-amber-800"];
@@ -100,7 +101,7 @@ export function AdminIndicadores({ companyId }: { companyId?: string }) {
       <Filtros empresas={empresas} empresa={empresa} setEmpresa={setEmpresa} busca={busca} setBusca={setBusca} placeholder="Nome, telefone, e-mail ou código">
         <select aria-label="Situação" className={sel} value={sit} onChange={(e) => setSit(e.target.value)}>
           <option value="">Todas as situações</option>
-          {["Ativo", "Cadastro incompleto", "Sem conta", "Pausado"].map((s) => <option key={s}>{s}</option>)}
+          {["Ativo", "Aguardando a empresa", "Cadastro incompleto", "Sem conta", "Pausado"].map((s) => <option key={s}>{s}</option>)}
         </select>
       </Filtros>
       <Total itens={[["Indicadores", String(lista.length)], ["Com cadastro completo", String(lista.filter((i) => i.registration_complete).length)],
@@ -110,7 +111,7 @@ export function AdminIndicadores({ companyId }: { companyId?: string }) {
           const [t, c] = situacao(i);
           return (
             <tr key={i.id} className="align-top">
-              <td className="px-3 py-3"><p className="font-medium">{i.full_name}</p><p className="text-xs text-muted">{[i.phone, i.email].filter(Boolean).join(" · ")}</p><p className="text-xs text-muted">{[[i.city, i.state].filter(Boolean).join("/"), i.via === "convite" ? "entrou por convite" : "cadastro manual"].filter(Boolean).join(" · ")}</p></td>
+              <td className="px-3 py-3"><p className="font-medium">{i.full_name}</p><p className="text-xs text-muted">{[i.phone, i.email].filter(Boolean).join(" · ")}</p><p className="text-xs text-muted">{[[i.city, i.state].filter(Boolean).join("/"), i.via === "convite" ? "entrou por convite" : i.via === "site" ? "pediu pelo site" : "cadastro manual"].filter(Boolean).join(" · ")}</p></td>
               {!companyId && <td className="px-3 py-3"><Link href={`/admin/empresas/${i.company_id}`} className="text-brand underline">{i.company_name}</Link></td>}
               <td className="px-3 py-3"><Selo texto={t} cls={c} /></td>
               <td className="whitespace-nowrap px-3 py-3 font-mono text-xs">{i.code}</td>

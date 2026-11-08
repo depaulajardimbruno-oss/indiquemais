@@ -136,7 +136,7 @@ export default function EntrarPage() {
           {tab === "criar" && (
             <div id="painel-criar" role="tabpanel" aria-labelledby="tab-criar" className="mt-5">
               <h1 className="text-xl font-semibold">Criar conta</h1>
-              <p className="mt-1 text-sm text-muted">A conta nasce a partir do convite de uma empresa parceira. É grátis para quem indica.</p>
+              <p className="mt-1 text-sm text-muted">Recebeu um convite de uma empresa? Cole abaixo. Se não, escolha uma das opções.</p>
 
               <form onSubmit={abrirConvite} className="mt-4">
                 <label className="block text-sm font-medium">
@@ -147,9 +147,15 @@ export default function EntrarPage() {
                 <button type="submit" className={primary}>Continuar com o convite</button>
               </form>
 
-              <div className="mt-5 space-y-3 rounded-brand bg-brand-soft p-3 text-sm">
-                <p><strong>Sou cliente de uma empresa parceira.</strong> Peça a ela o link de convite. Você confirma o e-mail, preenche o cadastro e já recebe o seu código de indicação.</p>
-                <p><strong>Tenho uma empresa e quero participar.</strong> O cadastro de empresas é feito pela equipe do Indiki+. Em breve haverá um formulário aqui.</p>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                <Link href="/cadastro" className="rounded-brand border border-line p-3 text-sm hover:border-brand">
+                  <strong className="block text-ink">Quero indicar</strong>
+                  <span className="text-muted">Crie a conta e escolha as empresas que você conhece.</span>
+                </Link>
+                <Link href="/cadastro-empresa" className="rounded-brand border border-line p-3 text-sm hover:border-brand">
+                  <strong className="block text-ink">Tenho uma empresa</strong>
+                  <span className="text-muted">Peça o cadastro da sua empresa no Indiki+.</span>
+                </Link>
               </div>
               <p className="mt-4 text-center text-sm text-muted">
                 Já tem conta?{" "}

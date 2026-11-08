@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Plus, X } from "lucide-react";
 import { Card, PageHeader } from "@/components/ui";
 import { supabaseBrowser } from "@/lib/supabase-browser";
+import { PedidosEmpresas } from "@/components/admin/PedidosEmpresas";
 
 export type AdminEmpresa = {
   id: string; name: string; legal_name: string | null; cnpj: string | null; status: string; customer_group: string | null;
@@ -30,16 +31,19 @@ export async function carregarOpcoes() {
 export function Empresas() {
   const [lista, setLista] = useState<AdminEmpresa[] | null>(null);
   const [nova, setNova] = useState(false);
+  const [versao, setVersao] = useState(0);
 
   useEffect(() => {
     supabaseBrowser().from("admin_companies").select("*").order("name").then(({ data }) => setLista((data ?? []) as AdminEmpresa[]));
-  }, []);
+  }, [versao]);
 
   return (
     <>
       <PageHeader title="Empresas" subtitle="Empresas parceiras, plano e quem acessa cada painel."
         action={<button onClick={() => setNova(true)} className="inline-flex min-h-11 items-center gap-2 rounded-brand bg-brand px-4 py-2 text-sm font-semibold text-brand-fg hover:opacity-90"><Plus size={16} aria-hidden /> Nova empresa</button>} />
+      <PedidosEmpresas onAprovou={() => setVersao((v) => v + 1)} />
       {nova && <NovaEmpresa onFechar={() => setNova(false)} />}
+      <h2 className="mb-3 text-lg font-semibold">Empresas cadastradas</h2>
       {lista === null && <p role="status" className="text-sm text-muted">Carregando…</p>}
       {lista?.length === 0 && <Card className="text-center"><p className="font-semibold">Nenhuma empresa cadastrada</p></Card>}
       <ul className="mt-4 space-y-3">

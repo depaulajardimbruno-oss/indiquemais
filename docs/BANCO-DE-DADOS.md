@@ -182,3 +182,10 @@ fechadas. Mudar de plano não altera vendas passadas. A visão `company_platform
 
 - Visões só para o admin do Indiki+ (vazias para qualquer outra pessoa): `admin_overview` (totais, funil por etapa, dinheiro), `admin_company_summary` (comparação por empresa), `admin_indicators` (todas as empresas; CPF mascarado, PIX completo porque o Indiki+ paga; comissões a liberar/liberadas/pagas), `admin_offers`, `admin_referrals` (indicações e vendas com a comissão), `admin_commissions`.
 - Testes: `supabase/tests/admin_views.sql`.
+
+## Migração 14: pedidos de cadastro e vitrine
+
+- Empresas: `submit_company_signup` (público, CNPJ validado, um pedido pendente por CNPJ) grava em `company_signup_requests`. `admin_decide_company_signup` aprova (cria a empresa no plano escolhido e libera o acesso do responsável pelo e-mail do pedido) ou recusa. Visões `admin_company_signups` e `admin_pending`.
+- Vitrine: `companies.listing_mode` (`fechado` só convite; `aprovacao` padrão, pedido fica pendente; `aberto` entra na hora) e `public_description`; `company_set_listing`; `public_companies()` público.
+- Indicador pelo site: `indicator_request_company` (exige cadastro completo; adota cadastro prévio da empresa; reabre pedido recusado). `referrer_links.request_status` (`pendente`/`aprovado`/`recusado`) — pendente/recusado nunca ativo. Empresa decide com `company_decide_indicator_request` (recusado é arquivado, com motivo). Indicador acompanha em `indicator_my_companies`.
+- Testes: `supabase/tests/signup_requests.sql`.

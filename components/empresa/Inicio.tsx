@@ -13,21 +13,22 @@ type Plano = { plan_name: string; max_active_referrers: number | null; max_offer
 export function Inicio() {
   const { empresa } = useEmpresa();
   const [plano, setPlano] = useState<Plano | null>(null);
-  const [n, setN] = useState<{ indicadores: number; produtos: number; abertas: number } | null>(null);
+  const [n, setN] = useState<{ indicadores: number; produtos: number; abertas: number; pedidos: number } | null>(null);
 
   useEffect(() => {
     const sb = supabaseBrowser();
     let vivo = true;
     (async () => {
-      const [{ data: p }, { count: ind }, { count: prod }, { count: ab }] = await Promise.all([
+      const [{ data: p }, { count: ind }, { count: prod }, { count: ab }, { count: ped }] = await Promise.all([
         sb.from("company_current_plan").select("plan_name, max_active_referrers, max_offers, used_referrers, used_offers").eq("company_id", empresa.id).maybeSingle(),
         sb.from("company_indicators").select("id", { count: "exact", head: true }).eq("company_id", empresa.id).eq("active", true),
         sb.from("company_offers").select("id", { count: "exact", head: true }).eq("company_id", empresa.id).eq("active", true),
         sb.from("company_referrals").select("id", { count: "exact", head: true }).eq("company_id", empresa.id).in("stage", ["indicado", "orcamento", "fechou", "instalada"]),
+        sb.from("company_indicators").select("id", { count: "exact", head: true }).eq("company_id", empresa.id).eq("request_status", "pendente"),
       ]);
       if (!vivo) return;
       setPlano(p as Plano | null);
-      setN({ indicadores: ind ?? 0, produtos: prod ?? 0, abertas: ab ?? 0 });
+      setN({ indicadores: ind ?? 0, produtos: prod ?? 0, abertas: ab ?? 0, pedidos: ped ?? 0 });
     })();
     return () => { vivo = false; };
   }, [empresa.id]);
@@ -42,6 +43,11 @@ export function Inicio() {
   return (
     <>
       <PageHeader title={`Olá, ${empresa.name}`} subtitle={plano ? `Plano ${plano.plan_name}` : undefined} />
+      {(n?.pedidos ?? 0) > 0 && (
+        <Link href="/empresa/indicadores" className="mb-4 block rounded-brand border-2 border-amber-300 bg-amber-50 p-4 text-sm font-medium text-amber-900">
+          {n!.pedidos === 1 ? "1 pessoa pediu" : `${n!.pedidos} pessoas pediram`} para indicar a sua empresa. Ver e responder.
+        </Link>
+      )}
       <div className="grid gap-4 sm:grid-cols-3">
         <Card><p className="text-sm text-muted">Indicadores ativos</p><p className="mt-1 text-3xl font-semibold tabular-nums">{limite(n?.indicadores, plano?.max_active_referrers)}</p></Card>
         <Card><p className="text-sm text-muted">Produtos ativos</p><p className="mt-1 text-3xl font-semibold tabular-nums">{limite(n?.produtos, plano?.max_offers)}</p></Card>

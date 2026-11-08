@@ -8,10 +8,12 @@ import { supabaseBrowser } from "@/lib/supabase-browser";
 import { maskPhone, onlyDigits } from "@/lib/cadastro";
 import { useEmpresa } from "@/components/empresa/EmpresaContext";
 import { ConviteCard } from "@/components/empresa/ConviteCard";
+import { VitrineCard } from "@/components/empresa/VitrineCard";
 
 type Indicador = {
   id: string; full_name: string; email: string | null; phone: string | null; code: string; active: boolean;
-  has_account: boolean; registration_complete: boolean; via: "convite" | "manual"; created_at: string;
+  has_account: boolean; registration_complete: boolean; via: "convite" | "manual" | "site"; created_at: string;
+  request_status: "pendente" | "aprovado" | "recusado"; requested_at: string | null; city: string | null; state: string | null; profile_kind: string | null;
   referrals_count: number; sales_count: number;
 };
 
@@ -41,10 +43,12 @@ export function Indicadores() {
   }, [empresa.id]);
   useEffect(() => { void Promise.resolve().then(carregar); }, [carregar]);
 
+  const pendentes = useMemo(() => (lista ?? []).filter((i) => i.request_status === "pendente"), [lista]);
   const filtrados = useMemo(() => {
     const q = busca.trim().toLowerCase();
-    if (!q) return lista ?? [];
-    return (lista ?? []).filter((i) => [i.full_name, i.email ?? "", i.phone ?? "", i.code].some((v) => v.toLowerCase().includes(q)));
+    const base = (lista ?? []).filter((i) => i.request_status !== "pendente");
+    if (!q) return base;
+    return base.filter((i) => [i.full_name, i.email ?? "", i.phone ?? "", i.code].some((v) => v.toLowerCase().includes(q)));
   }, [lista, busca]);
 
   async function alternar(i: Indicador) {
@@ -66,13 +70,16 @@ export function Indicadores() {
         ) : undefined}
       />
 
+      {pendentes.length > 0 && <Pedidos lista={pendentes} podeDecidir={empresa.can_edit} onDecidiu={carregar} />}
+
       <ConviteCard companyId={empresa.id} companyName={empresa.name} canEdit={empresa.can_edit} onToken={setToken} />
+      <div className="mt-4"><VitrineCard /></div>
 
       {novo && <NovoIndicador onFechar={() => setNovo(false)} onCriado={async (i) => { setNovo(false); await carregar(); setAcesso(i); }} />}
       {acesso && <CartaoAcesso who={acesso} token={token} origin={origin} empresaNome={empresa.name} onFechar={() => setAcesso(null)} />}
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-semibold">Cadastrados {lista ? `(${lista.length})` : ""}</h2>
+        <h2 className="text-lg font-semibold">Cadastrados {lista ? `(${lista.length - pendentes.length})` : ""}</h2>
         <label className="relative w-full sm:w-72">
           <span className="sr-only">Buscar indicador</span>
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" aria-hidden />
@@ -82,7 +89,7 @@ export function Indicadores() {
       {msg && <p role="alert" className="mt-2 text-sm text-red-700">{msg}</p>}
 
       {lista === null && <p role="status" className="mt-4 text-sm text-muted">Carregando…</p>}
-      {lista?.length === 0 && (
+      {lista && lista.length - pendentes.length === 0 && (
         <Card className="mt-4 text-center">
           <p className="font-semibold">Ninguém cadastrado ainda</p>
           <p className="mt-1 text-sm text-muted">Mande o link de convite acima para seus clientes, ou cadastre um indicador manualmente.</p>
@@ -104,7 +111,7 @@ export function Indicadores() {
                 </div>
                 <dl className="mt-3 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
                   <div><dt className="text-xs text-muted">Código</dt><dd className="font-mono text-xs font-semibold">{i.code}</dd></div>
-                  <div><dt className="text-xs text-muted">Entrou por</dt><dd>{i.via === "convite" ? "Link de convite" : "Cadastro manual"}</dd></div>
+                  <div><dt className="text-xs text-muted">Entrou por</dt><dd>{i.via === "convite" ? "Link de convite" : i.via === "site" ? "Pedido pelo site" : "Cadastro manual"}</dd></div>
                   <div><dt className="text-xs text-muted">Indicações</dt><dd className="tabular-nums">{i.referrals_count}</dd></div>
                   <div><dt className="text-xs text-muted">Vendas</dt><dd className="tabular-nums">{i.sales_count}</dd></div>
                 </dl>
@@ -215,6 +222,57 @@ function CartaoAcesso({ who, token, origin, empresaNome, onFechar }: { who: Indi
       <a href={wa} target="_blank" rel="noreferrer" className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-brand bg-brand px-4 py-2 text-sm font-semibold text-brand-fg hover:opacity-90">
         <MessageCircle size={16} aria-hidden /> Enviar por WhatsApp{digits ? ` para ${who.phone}` : ""}
       </a>
+    </Card>
+  );
+}
+
+function Pedidos({ lista, podeDecidir, onDecidiu }: { lista: Indicador[]; podeDecidir: boolean; onDecidiu: () => Promise<void> }) {
+  const [busy, setBusy] = useState("");
+  const [recusando, setRecusando] = useState<string | null>(null);
+  const [motivo, setMotivo] = useState("");
+  const [erro, setErro] = useState("");
+  async function decidir(id: string, aprovar: boolean) {
+    setBusy(id); setErro("");
+    const { error } = await supabaseBrowser().rpc("company_decide_indicator_request", { p_link: id, p_approve: aprovar, p_note: aprovar ? null : motivo || null });
+    setBusy("");
+    if (error) return setErro(error.message);
+    setRecusando(null); setMotivo("");
+    await onDecidiu();
+  }
+  return (
+    <Card className="mb-6 border-2 border-amber-300">
+      <h2 className="text-lg font-semibold">{lista.length === 1 ? "1 pessoa quer" : `${lista.length} pessoas querem`} indicar a sua empresa</h2>
+      <p className="text-sm text-muted">Pedidos feitos pelo site do Indiki+. Aceite quem você conhece; recusados podem pedir de novo.</p>
+      {erro && <p role="alert" className="mt-2 text-sm text-red-700">{erro}</p>}
+      <ul className="mt-3 divide-y divide-line">
+        {lista.map((i) => (
+          <li key={i.id} className="py-3">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-medium">{i.full_name}</p>
+                <p className="text-sm text-muted">{[i.phone, i.email].filter(Boolean).join(" · ")}</p>
+                <p className="text-xs text-muted">{[[i.city, i.state].filter(Boolean).join("/"), i.profile_kind === "profissional" ? "profissional" : "cliente", i.requested_at ? `pediu em ${new Date(i.requested_at).toLocaleDateString("pt-BR")}` : ""].filter(Boolean).join(" · ")}</p>
+              </div>
+              {podeDecidir && recusando !== i.id && (
+                <div className="flex gap-2">
+                  <button onClick={() => decidir(i.id, true)} disabled={busy === i.id} className="min-h-10 rounded-brand bg-brand px-4 py-2 text-sm font-semibold text-brand-fg hover:opacity-90 disabled:opacity-60">Aceitar</button>
+                  <button onClick={() => setRecusando(i.id)} className={btn}>Recusar</button>
+                </div>
+              )}
+            </div>
+            {recusando === i.id && (
+              <div className="mt-3 flex flex-wrap items-end gap-2">
+                <label className="block min-w-0 flex-1 text-sm font-medium">Motivo (a pessoa vê; opcional)
+                  <input className={field} value={motivo} onChange={(e) => setMotivo(e.target.value)} placeholder="Ex.: não encontramos você na nossa carteira de clientes" />
+                </label>
+                <button onClick={() => decidir(i.id, false)} disabled={busy === i.id} className="min-h-12 rounded-brand bg-rose-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">Confirmar recusa</button>
+                <button onClick={() => { setRecusando(null); setMotivo(""); }} className={btn}>Cancelar</button>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+      {!podeDecidir && <p className="mt-2 text-xs text-muted">Só o administrador da empresa aceita ou recusa.</p>}
     </Card>
   );
 }

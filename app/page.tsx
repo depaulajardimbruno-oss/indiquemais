@@ -178,15 +178,15 @@ export default async function Home() {
                 ganha uma comissão. Simples, automático e transparente.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/entrar" className={btnPrimary}>
-                  Entrar
+                <Link href="/cadastro" className={btnPrimary}>
+                  Quero indicar e ganhar
                 </Link>
-                <a href="#empresas" className={btnSecondary}>
+                <Link href="/cadastro-empresa" className={btnSecondary}>
                   Tenho uma empresa
-                </a>
+                </Link>
               </div>
               <p className="mt-4 text-base text-muted">
-                O cadastro é feito pelo link que a empresa parceira envia para você.
+                Cadastro gratuito. Escolha as empresas que você conhece ou use o convite que uma empresa te mandou.
               </p>
             </div>
 
@@ -385,7 +385,7 @@ export default async function Home() {
               Pronto para transformar indicações em oportunidades? Cadastre-se e comece a ganhar.
             </h2>
             <Link
-              href="/entrar"
+              href="/cadastro"
               className="inline-flex min-h-12 items-center justify-center rounded-full bg-accent px-7 py-3 text-base font-bold text-ink hover:brightness-95"
             >
               Entrar para indicar
@@ -401,6 +401,7 @@ export default async function Home() {
           </p>
           <nav aria-label="Rodapé" className="flex flex-wrap gap-x-6 gap-y-2">
             <Link href="/entrar" className="hover:text-brand">Entrar</Link>
+            <Link href="/cadastro-empresa" className="hover:text-brand">Cadastrar minha empresa</Link>
             <Link href="/termos" className="hover:text-brand">Termos e dados</Link>
           </nav>
         </div>
