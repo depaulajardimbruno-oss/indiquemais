@@ -87,7 +87,7 @@ select c.id, c.name, c.legal_name, c.cnpj, c.status, c.phone, c.email, c.finance
        c.address_city, c.address_state, c.customer_group,
        coalesce(m.role::text, case when public.is_platform_admin() then 'plataforma' end) as my_role,
        (m.role = 'admin' or public.is_platform_admin()) as can_edit,
-       public.company_plan_code(c.id) as plan_code
+       (select h.plan_code from public.company_plan_history h where h.company_id = c.id and h.ends_at is null) as plan_code
   from public.companies c
   left join public.company_members m on m.company_id = c.id and m.user_id = auth.uid()
  where c.archived_at is null and (m.user_id is not null or public.is_platform_admin());

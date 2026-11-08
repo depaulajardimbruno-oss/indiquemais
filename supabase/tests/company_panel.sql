@@ -17,6 +17,7 @@ grant execute on function pg_temp.expect_eq(text,text,text) to public;
 select '=== 35. Dados cadastrais da empresa';
 -- a1 é admin da Soulglass
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a1',false); set role authenticated;
+select pg_temp.expect_eq('lê a linha inteira (select *) sem erro', (select count(*)::text from (select * from public.company_my_companies) x), '1');
 select pg_temp.expect_eq('vê só as próprias empresas, com papel admin', (select string_agg(name || ':' || my_role || ':' || can_edit::text, ',') from public.company_my_companies), 'Soulglass:admin:true');
 select public.company_update_profile('c0000000-0000-0000-0000-000000000001','Soulglass Vidros','(19) 3333-4444','contato@soulglass.com.br','Financeiro@Soulglass.com.br','soulglass.com.br','13000-000','Rua A','100',null,'Centro','Campinas','sp');
 select pg_temp.expect_eq('dados gravados e normalizados', (select name || '|' || finance_email || '|' || address_zip || '|' || address_state from public.company_my_companies), 'Soulglass Vidros|financeiro@soulglass.com.br|13000000|SP');
