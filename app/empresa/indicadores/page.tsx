@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { Check, Copy, MessageCircle, UserPlus, X } from "lucide-react";
 import { Card, PageHeader } from "@/components/ui";
 import { useOrigin } from "@/components/useOrigin";
+import { ConviteCard } from "@/components/empresa/ConviteCard";
 import { PILOT_COMPANY } from "@/lib/mock";
 import {
   genCode,
@@ -150,6 +151,7 @@ export default function IndicadoresPage() {
         title="Indicadores"
         subtitle="Clientes que podem indicar amigos e ganhar comissão nos seus produtos."
       />
+      <ConviteCard />
 
       {shown && (
         <div className="mb-6">
