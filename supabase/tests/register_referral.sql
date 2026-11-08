@@ -24,7 +24,7 @@ reset role;
 select pg_temp.expect_eq('nasce declarada, ligada à indicadora e aguardando confirmação', (select source || '|' || (link_id = :'lrita')::text || '|' || (declared_confirmed_at is null)::text || '|' || stage from public.referrals where id = :'rid'), 'declarado|true|true|indicado');
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-0000000000a1',false); set role authenticated;
 select pg_temp.expect_fail('sem autorização do cliente', format($$select public.company_register_referral('c0000000-0000-0000-0000-000000000001', %L, 'X Y', '(19) 90000-0001', %L, false)$$, :'ofr', :'lrita'));
-select pg_temp.expect_fail('cliente repetido em andamento', format($$select public.company_register_referral('c0000000-0000-0000-0000-000000000001', %L, 'Helena C', '19 91111-2222', %L, true)$$, :'ofr', :'lrita'));
+select pg_temp.expect_eq('cliente repetido é aceito (a tela só alerta)', (public.company_register_referral('c0000000-0000-0000-0000-000000000001', :'ofr', 'Helena C', '19 91111-2222', :'lrita', true) is not null)::text, 'true');
 select pg_temp.expect_fail('indicador de outra empresa', format($$select public.company_register_referral('c0000000-0000-0000-0000-000000000001', %L, 'Ze Silva', '(19) 90000-0002', (select id from public.referrer_links where company_id = 'c0000000-0000-0000-0000-000000000002' limit 1), true)$$, :'ofr'));
 select pg_temp.expect_fail('produto de outra empresa', format($$select public.company_register_referral('c0000000-0000-0000-0000-000000000001', (select id from public.offers where company_id = 'c0000000-0000-0000-0000-000000000002' limit 1), 'Ze Silva', '(19) 90000-0002', %L, true)$$, :'lrita'));
 select public.company_set_referral_stage(:'rid','orcamento');

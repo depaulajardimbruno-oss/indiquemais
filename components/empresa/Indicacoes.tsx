@@ -49,6 +49,15 @@ export function Indicacoes() {
   }, [empresa.id]);
   useEffect(() => { void Promise.resolve().then(carregar); }, [carregar]);
 
+  // Indicações abertas com o mesmo telefone de cliente: pode ser duplicada (a empresa confere).
+  const repetidas = useMemo(() => {
+    const abertas = (lista ?? []).filter((r) => ["indicado", "orcamento", "fechou"].includes(r.stage));
+    const porFone = new Map<string, Ref[]>();
+    for (const r of abertas) { const k = onlyDigits(r.friend_phone).slice(-11); if (k.length >= 10) porFone.set(k, [...(porFone.get(k) ?? []), r]); }
+    const m = new Map<string, Ref[]>();
+    for (const grupo of porFone.values()) if (grupo.length > 1) for (const r of grupo) m.set(r.id, grupo.filter((x) => x.id !== r.id));
+    return m;
+  }, [lista]);
   const contagem = useMemo(() => Object.fromEntries(ABAS.map(([k, , st]) => [k, (lista ?? []).filter((r) => (st as readonly string[]).includes(r.stage)).length])), [lista]);
   const visiveis = useMemo(() => {
     const st = ABAS.find((a) => a[0] === aba)![2] as readonly string[];
@@ -69,6 +78,11 @@ export function Indicacoes() {
           </button>
         ))}
       </div>
+      {repetidas.size > 0 && (
+        <p role="status" className="mb-4 rounded-brand border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+          {repetidas.size} indicações em andamento têm o mesmo telefone de cliente de outra. Confira se não são duplicadas; elas estão marcadas na lista.
+        </p>
+      )}
       <label className="relative mb-4 block sm:max-w-80">
         <span className="sr-only">Buscar</span>
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" aria-hidden />
@@ -81,13 +95,13 @@ export function Indicacoes() {
         </Card>
       )}
       <ul className="space-y-3">
-        {visiveis.map((r) => <Item key={r.id} r={r} empresaNome={empresa.name} onMudou={carregar} />)}
+        {visiveis.map((r) => <Item key={r.id} r={r} outras={repetidas.get(r.id) ?? []} empresaNome={empresa.name} onMudou={carregar} />)}
       </ul>
     </>
   );
 }
 
-function Item({ r, empresaNome, onMudou }: { r: Ref; empresaNome: string; onMudou: () => Promise<void> }) {
+function Item({ r, outras, empresaNome, onMudou }: { r: Ref; outras: Ref[]; empresaNome: string; onMudou: () => Promise<void> }) {
   const [modo, setModo] = useState<null | "fechar" | "perder">(null);
   const [valor, setValor] = useState("");
   const [contrato, setContrato] = useState("");
@@ -127,6 +141,18 @@ function Item({ r, empresaNome, onMudou }: { r: Ref; empresaNome: string; onMudo
           <Selo texto={ETAPA[r.stage]?.label ?? r.stage} cls={ETAPA[r.stage]?.cls ?? ""} />
         </div>
 
+        {outras.length > 0 && (
+          <div className="mt-3 rounded-brand border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+            <p><strong>Possível duplicada.</strong> O mesmo telefone também está em:</p>
+            <ul className="mt-1 list-disc pl-5">
+              {outras.map((o) => <li key={o.id}>{o.friend_name} · {o.offer_name} · {o.referrer_name ? `indicado por ${o.referrer_name}` : "sem indicador"} · {ETAPA[o.stage]?.label} desde {dataBR(o.created_at)}</li>)}
+            </ul>
+            <p className="mt-1">Se for outra compra, siga normalmente. Se for o mesmo pedido, encerre esta.</p>
+            {r.stage !== "fechou" && (
+              <button className={`${btn} mt-2`} disabled={busy} onClick={() => { if (confirm(`Encerrar a indicação de ${r.friend_name} como duplicada?`)) void mudar("perdido", { nota: "Indicação duplicada" }); }}>É duplicada: encerrar esta</button>
+            )}
+          </div>
+        )}
         <div className="mt-3 flex flex-wrap items-baseline justify-between gap-2 rounded-brand bg-surface p-3 text-sm">
           {r.commission_cents != null ? (
             <span>Comissão de <strong>{brl(r.commission_cents)}</strong> · venda {brl(r.sale_value_cents ?? 0)} · contrato {r.contract_number}</span>
@@ -255,7 +281,7 @@ function Registrar({ existentes, onFechar, onCriado }: { existentes: Ref[]; onFe
         </div>
         {repetido && (
           <p role="status" className="rounded-brand bg-amber-50 p-3 text-sm text-amber-900">
-            Este telefone já tem uma indicação em andamento: <strong>{repetido.friend_name}</strong>, {repetido.offer_name}, {repetido.referrer_name ? `indicado por ${repetido.referrer_name}` : "sem indicador"} ({ETAPA[repetido.stage]?.label}). Use essa em vez de registrar outra.
+            Atenção: este telefone já tem uma indicação em andamento: <strong>{repetido.friend_name}</strong>, {repetido.offer_name}, {repetido.referrer_name ? `indicado por ${repetido.referrer_name}` : "sem indicador"} ({ETAPA[repetido.stage]?.label}). Se for o mesmo pedido, não registre de novo. Se for outra compra, pode continuar.
           </p>
         )}
         <label className="block text-sm font-medium">Produto

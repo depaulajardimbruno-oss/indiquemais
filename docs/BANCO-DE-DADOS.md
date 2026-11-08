@@ -202,3 +202,7 @@ fechadas. Mudar de plano não altera vendas passadas. A visão `company_platform
 
 - `company_register_referral(empresa, produto, cliente, telefone, indicador, autorização do cliente, observação)`: para o cliente que procurou a empresa direto e disse quem indicou. Qualquer membro da empresa registra; o indicador é escolhido na lista dela (ativo e aceito). Nasce como `declarado`, ligado ao indicador, e só pode ser fechada depois que ele confirmar no painel (`indicator_answer_declared`). Recusa telefone de cliente que já tem indicação em andamento. Registro vai para a auditoria (`REGISTRO_EMPRESA`).
 - Testes: `supabase/tests/register_referral.sql`.
+
+## Migração 17: indicação repetida vira alerta
+
+- `company_register_referral` deixa de recusar cliente com indicação em andamento: o mesmo cliente pode ter mais de uma (outra compra). A tela de Indicações marca "possível duplicada" quando há outra aberta com o mesmo telefone e oferece "É duplicada: encerrar esta" (vira perdida com a nota "Indicação duplicada").
