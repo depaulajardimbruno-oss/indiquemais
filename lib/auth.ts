@@ -12,7 +12,9 @@ export async function destinoAposEntrar(sb: SupabaseClient, destino?: string | n
   const seguro = destinoSeguro(destino);
   if (seguro) return seguro;
   const { data: isAdmin } = await sb.rpc("is_platform_admin");
-  return isAdmin === true ? "/admin" : "/conta";
+  if (isAdmin === true) return "/admin";
+  const { count } = await sb.from("company_my_companies").select("id", { count: "exact", head: true });
+  return (count ?? 0) > 0 ? "/empresa" : "/conta";
 }
 
 export function validarSenha(senha: string, confirma?: string) {

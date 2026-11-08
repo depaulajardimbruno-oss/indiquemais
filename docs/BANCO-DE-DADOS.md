@@ -161,3 +161,10 @@ fechadas. Mudar de plano não altera vendas passadas. A visão `company_platform
 - `indicator_register(...)`: exige e-mail confirmado; valida nome completo, telefone, 18+ anos, cidade/UF, CPF, PIX (por tipo) e aceite dos termos; grava perfil + CPF (`indicator_tax_profiles`) e cria o vínculo (`referrer_links`) com o código na empresa. Adota um cadastro prévio feito pela empresa (mesmo e-mail ou telefone) em vez de duplicar. CPF em branco mantém o já cadastrado (entrar em outra empresa).
 - `indicator_my_profile`: o próprio cadastro, com CPF mascarado.
 - Testes: `supabase/tests/indicator_signup.sql`.
+
+## Migração 11: painel da empresa
+
+- `companies` ganha telefone, e-mails (contato e financeiro), site e endereço. `company_update_profile` (só admin da empresa ou do Indiki+); razão social e CNPJ só o Indiki+ altera.
+- Visões: `company_my_companies` (empresas que a pessoa acessa e o papel), `company_indicators` (agora com origem convite/manual, cadastro completo e vendas; sem CPF/PIX), `company_offers` (produtos com indicações, vendas e em andamento).
+- `referral_link_info(code)` público: empresa, primeiro nome de quem indicou e produtos ativos (sem valores de comissão), para a página `/i/CÓDIGO`.
+- Testes: `supabase/tests/company_panel.sql`.
