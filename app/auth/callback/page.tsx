@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui";
 import { supabaseBrowser } from "@/lib/supabase-browser";
+import { destinoAposEntrar } from "@/lib/auth";
 
 export default function CallbackPage() {
   const [erro, setErro] = useState("");
@@ -17,9 +18,7 @@ export default function CallbackPage() {
       if (!code) return setErro("O link está incompleto. Peça um novo na tela de entrada.");
       const { error } = await sb.auth.exchangeCodeForSession(code);
       if (error) return setErro("Este link já foi usado ou venceu. Peça um novo na tela de entrada.");
-      const { data: isAdmin } = await sb.rpc("is_platform_admin");
-      const seguro = destino && destino.startsWith("/") && !destino.startsWith("//") ? destino : null;
-      location.replace(seguro ?? (isAdmin === true ? "/admin" : "/conta"));
+      location.replace(await destinoAposEntrar(sb, destino));
     })();
   }, []);
 

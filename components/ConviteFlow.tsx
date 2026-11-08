@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CheckCircle2, Copy, Loader2, MailCheck, XCircle } from "lucide-react";
 import { Card } from "@/components/ui";
 import { hasSupabase, supabaseBrowser } from "@/lib/supabase-browser";
 import { PIX_TYPES, TERMS_VERSION, UFS, maskCpf, maskPhone, maxBirthDate, onlyDigits, validCpf, type PixType } from "@/lib/cadastro";
 import { useOrigin } from "@/components/useOrigin";
+import { PasswordInput } from "@/components/PasswordInput";
+import { MIN_PASSWORD, mensagemAuth, validarSenha } from "@/lib/auth";
 
 const field =
   "mt-1 w-full rounded-brand border border-line bg-white px-3 py-3 text-base outline-none focus:border-brand focus:ring-2 focus:ring-brand-line";
@@ -21,6 +23,9 @@ export function ConviteFlow({ token }: { token: string }) {
   const [step, setStep] = useState<Step>(hasSupabase ? "carregando" : "indisponivel");
   const [company, setCompany] = useState("");
   const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [confirma, setConfirma] = useState("");
+  const [temConta, setTemConta] = useState(false);
   const [busy, setBusy] = useState(false);
   const [erro, setErro] = useState("");
   const [code, setCode] = useState("");
@@ -33,10 +38,8 @@ export function ConviteFlow({ token }: { token: string }) {
   });
   const set = <K extends keyof typeof f>(k: K, v: (typeof f)[K]) => setF((p) => ({ ...p, [k]: v }));
 
-  useEffect(() => {
-    if (!hasSupabase) return;
-    const sb = supabaseBrowser();
-    (async () => {
+  const iniciar = useCallback(async () => {
+      const sb = supabaseBrowser();
       const { data: info } = await sb.rpc("invite_info", { p_token: token });
       const row = Array.isArray(info) ? info[0] : null;
       if (!row) return setStep("invalido");
@@ -55,19 +58,42 @@ export function ConviteFlow({ token }: { token: string }) {
         }));
       }
       setStep("cadastro");
-    })();
   }, [token]);
 
-  async function enviarLink(e: React.FormEvent) {
+  useEffect(() => {
+    if (!hasSupabase) return;
+    // roda depois da montagem (busca o convite e a sessão no banco)
+    void Promise.resolve().then(iniciar);
+  }, [iniciar]);
+
+  async function criarConta(e: React.FormEvent) {
     e.preventDefault();
+    const v = validarSenha(senha, confirma);
+    if (v) return setErro(v);
     setErro(""); setBusy(true);
-    const { error } = await supabaseBrowser().auth.signInWithOtp({
-      email: email.trim(),
+    const { data, error } = await supabaseBrowser().auth.signUp({
+      email: email.trim(), password: senha,
       options: { emailRedirectTo: `${location.origin}/auth/callback?destino=${encodeURIComponent(`/convite/${token}`)}` },
     });
     setBusy(false);
-    if (error) return setErro("Não conseguimos enviar o link agora. Confira o e-mail e tente de novo em alguns minutos.");
+    if (error) return setErro(mensagemAuth(error.message));
+    // E-mail já cadastrado: o Supabase devolve um usuário sem identidades (não revela a conta).
+    if (data.user && data.user.identities && data.user.identities.length === 0) {
+      setTemConta(true);
+      return setErro("Este e-mail já tem conta. Entre com a sua senha para continuar.");
+    }
+    if (data.session) return void iniciar(); // confirmação de e-mail desligada no projeto
     setStep("enviado");
+  }
+
+  async function entrarComSenha(e: React.FormEvent) {
+    e.preventDefault();
+    setErro(""); setBusy(true);
+    const { error } = await supabaseBrowser().auth.signInWithPassword({ email: email.trim(), password: senha });
+    setBusy(false);
+    if (error) return setErro(mensagemAuth(error.message));
+    setStep("carregando");
+    void iniciar();
   }
 
   async function cadastrar(e: React.FormEvent) {
@@ -112,13 +138,23 @@ export function ConviteFlow({ token }: { token: string }) {
     <Card>
       <p className="text-sm text-muted">{company} convidou você</p>
       <h1 className="mt-1 text-2xl font-semibold tracking-tight">Indique amigos e ganhe comissão</h1>
-      <p className="mt-2 text-sm text-muted">Cada amigo que fechar com a {company} por indicação seu rende uma comissão, paga por PIX. Primeiro, confirme o seu e-mail: enviamos um link para você continuar.</p>
-      <form onSubmit={enviarLink} className="mt-4">
-        <label className="block text-sm font-medium">Seu e-mail
+      <p className="mt-2 text-sm text-muted">Cada amigo que fechar com a {company} por indicação sua rende uma comissão, paga por PIX.</p>
+      <div role="tablist" aria-label="Conta" className="mt-4 grid grid-cols-2 gap-1 rounded-brand bg-brand-soft p-1">
+        {([[false, "Criar conta"], [true, "Já tenho conta"]] as const).map(([v, l]) => (
+          <button key={l} type="button" role="tab" aria-selected={temConta === v} onClick={() => { setTemConta(v); setErro(""); }}
+            className={`rounded-brand px-3 py-2 text-sm font-semibold ${temConta === v ? "bg-white text-brand shadow-sm" : "text-muted hover:text-ink"}`}>{l}</button>
+        ))}
+      </div>
+      <form onSubmit={temConta ? entrarComSenha : criarConta} className="mt-2">
+        <label className="mt-2 block text-sm font-medium">E-mail
           <input required type="email" autoComplete="email" className={field} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="voce@email.com" />
         </label>
-        <button type="submit" disabled={busy} className={`${btn} mt-4`}>{busy ? "Enviando…" : "Enviar link para o meu e-mail"}</button>
+        <PasswordInput label={temConta ? "Senha" : "Crie uma senha"} value={senha} onChange={setSenha} autoComplete={temConta ? "current-password" : "new-password"} hint={temConta ? undefined : `Pelo menos ${MIN_PASSWORD} caracteres, com letras e números.`} />
+        {!temConta && <PasswordInput label="Repita a senha" value={confirma} onChange={setConfirma} autoComplete="new-password" />}
+        <button type="submit" disabled={busy} className={`${btn} mt-4`}>{busy ? "Aguarde…" : temConta ? "Entrar e continuar" : "Criar conta"}</button>
         {erro && <p role="alert" className="mt-2 text-sm text-red-700">{erro}</p>}
+        {temConta && <p className="mt-3 text-center text-sm"><Link href="/entrar" className="text-brand underline">Esqueci minha senha</Link></p>}
+        {!temConta && <p className="mt-3 text-xs text-muted">Depois de criar, enviamos um e-mail para confirmar que ele é seu. Em seguida você completa o cadastro.</p>}
       </form>
     </Card>
   );
@@ -126,8 +162,8 @@ export function ConviteFlow({ token }: { token: string }) {
   if (step === "enviado") return (
     <Card className="text-center">
       <MailCheck className="mx-auto text-brand" size={40} aria-hidden />
-      <h1 className="mt-3 text-xl font-semibold">Veja o seu e-mail</h1>
-      <p className="mt-1 text-sm text-muted">Enviamos um link para <strong>{email}</strong>. Abra no mesmo aparelho e navegador em que você está agora. Vale por 1 hora. Se não achar, olhe o spam.</p>
+      <h1 className="mt-3 text-xl font-semibold">Confirme o seu e-mail</h1>
+      <p className="mt-1 text-sm text-muted">Enviamos um link para <strong>{email}</strong>. Abra no mesmo aparelho e navegador em que você está agora para continuar o cadastro. Se não achar, olhe o spam.</p>
     </Card>
   );
 

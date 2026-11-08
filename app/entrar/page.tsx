@@ -6,6 +6,8 @@ import { useState } from "react";
 import { MailCheck } from "lucide-react";
 import { Card } from "@/components/ui";
 import { hasSupabase, supabaseBrowser } from "@/lib/supabase-browser";
+import { PasswordInput } from "@/components/PasswordInput";
+import { destinoAposEntrar, mensagemAuth } from "@/lib/auth";
 
 const input =
   "mt-1 w-full rounded-brand border border-line bg-white px-3 py-3 text-base outline-none focus:border-brand focus:ring-2 focus:ring-brand-line";
@@ -13,6 +15,7 @@ const primary =
   "mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-brand bg-brand px-4 py-3 text-sm font-semibold text-brand-fg hover:opacity-90 disabled:opacity-60";
 
 type Tab = "entrar" | "criar";
+type Modo = "senha" | "esqueci";
 
 /** O código do convite pode vir colado como link inteiro ou só o código. */
 function parseInvite(text: string) {
@@ -24,8 +27,10 @@ function parseInvite(text: string) {
 export default function EntrarPage() {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("entrar");
+  const [modo, setModo] = useState<Modo>("senha");
   const [sent, setSent] = useState(false);
   const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [convite, setConvite] = useState("");
@@ -36,23 +41,23 @@ export default function EntrarPage() {
     setErro("");
     if (!hasSupabase) return setErro("Este endereço ainda não está ligado ao sistema real.");
     setEnviando(true);
-    const destino = new URLSearchParams(location.search).get("destino");
-    const volta = `${location.origin}/auth/callback${destino ? `?destino=${encodeURIComponent(destino)}` : ""}`;
-    // shouldCreateUser: false = só entra quem já tem conta. Conta nova nasce pelo convite.
-    const { error } = await supabaseBrowser().auth.signInWithOtp({
-      email: email.trim(),
-      options: { emailRedirectTo: volta, shouldCreateUser: false },
+    const sb = supabaseBrowser();
+    const { error } = await sb.auth.signInWithPassword({ email: email.trim(), password: senha });
+    if (error) { setEnviando(false); return setErro(mensagemAuth(error.message)); }
+    router.replace(await destinoAposEntrar(sb, new URLSearchParams(location.search).get("destino")));
+  }
+
+  async function esqueci(e: React.FormEvent) {
+    e.preventDefault();
+    setErro("");
+    if (!hasSupabase) return setErro("Este endereço ainda não está ligado ao sistema real.");
+    setEnviando(true);
+    const { error } = await supabaseBrowser().auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${location.origin}/auth/callback?destino=${encodeURIComponent("/redefinir-senha")}`,
     });
     setEnviando(false);
-    if (error) {
-      const semConta = /signups? not allowed|not allowed for otp|user not found/i.test(error.message);
-      return setErro(
-        semConta
-          ? "Não encontramos uma conta com este e-mail. Se você recebeu um convite de uma empresa, abra o link do convite para criar a sua conta."
-          : "Não conseguimos enviar o link agora. Confira o e-mail e tente de novo em alguns minutos.",
-      );
-    }
-    setSent(true);
+    if (error) return setErro(mensagemAuth(error.message));
+    setSent(true); // mesma resposta exista ou não a conta (não revela quem tem cadastro)
   }
 
   function abrirConvite(e: React.FormEvent) {
@@ -69,7 +74,7 @@ export default function EntrarPage() {
       id={`tab-${t}`}
       aria-selected={tab === t}
       aria-controls={`painel-${t}`}
-      onClick={() => { setTab(t); setErro(""); setErroConvite(""); setSent(false); }}
+      onClick={() => { setTab(t); setErro(""); setErroConvite(""); setSent(false); setModo("senha"); }}
       className={`flex-1 rounded-brand px-3 py-2 text-sm font-semibold ${tab === t ? "bg-white shadow-sm text-brand" : "text-muted hover:text-ink"}`}
     >
       {label}
@@ -85,23 +90,19 @@ export default function EntrarPage() {
             {tabBtn("criar", "Criar conta")}
           </div>
 
-          {tab === "entrar" && !sent && (
+          {tab === "entrar" && modo === "senha" && (
             <form id="painel-entrar" role="tabpanel" aria-labelledby="tab-entrar" onSubmit={entrar} className="mt-5">
               <h1 className="text-xl font-semibold">Entrar na sua conta</h1>
-              <p className="mt-1 text-sm text-muted">Informe o e-mail da sua conta. Enviamos um link para você entrar, sem senha.</p>
               <label className="mt-4 block text-sm font-medium">
-                Seu e-mail
+                E-mail
                 <input required type="email" autoComplete="email" className={input} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="voce@email.com" />
               </label>
-              <button type="submit" disabled={enviando} className={primary}>{enviando ? "Enviando…" : "Enviar link de acesso"}</button>
-              {erro && (
-                <p role="alert" className="mt-3 text-sm text-red-700">
-                  {erro}{" "}
-                  {erro.startsWith("Não encontramos") && (
-                    <button type="button" onClick={() => setTab("criar")} className="font-semibold underline">Ver como criar conta</button>
-                  )}
-                </p>
-              )}
+              <PasswordInput label="Senha" value={senha} onChange={setSenha} autoComplete="current-password" />
+              <div className="mt-2 text-right">
+                <button type="button" onClick={() => { setModo("esqueci"); setErro(""); setSent(false); }} className="text-sm font-medium text-brand underline">Esqueci minha senha</button>
+              </div>
+              <button type="submit" disabled={enviando} className={primary}>{enviando ? "Entrando…" : "Entrar"}</button>
+              {erro && <p role="alert" className="mt-3 text-sm text-red-700">{erro}</p>}
               <p className="mt-4 text-center text-sm text-muted">
                 Ainda não tem conta?{" "}
                 <button type="button" onClick={() => setTab("criar")} className="font-semibold text-brand underline">Criar conta</button>
@@ -109,12 +110,26 @@ export default function EntrarPage() {
             </form>
           )}
 
-          {tab === "entrar" && sent && (
+          {tab === "entrar" && modo === "esqueci" && !sent && (
+            <form id="painel-entrar" role="tabpanel" aria-labelledby="tab-entrar" onSubmit={esqueci} className="mt-5">
+              <h1 className="text-xl font-semibold">Criar ou trocar a senha</h1>
+              <p className="mt-1 text-sm text-muted">Informe o e-mail da sua conta. Enviamos um link para você definir uma senha nova. Use também se você ainda não tem senha.</p>
+              <label className="mt-4 block text-sm font-medium">
+                E-mail
+                <input required type="email" autoComplete="email" className={input} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="voce@email.com" />
+              </label>
+              <button type="submit" disabled={enviando} className={primary}>{enviando ? "Enviando…" : "Enviar link para definir senha"}</button>
+              {erro && <p role="alert" className="mt-3 text-sm text-red-700">{erro}</p>}
+              <button type="button" onClick={() => { setModo("senha"); setErro(""); }} className="mt-4 w-full text-center text-sm font-semibold text-brand underline">Voltar para entrar</button>
+            </form>
+          )}
+
+          {tab === "entrar" && modo === "esqueci" && sent && (
             <div className="mt-5 text-center">
               <MailCheck className="mx-auto text-brand" size={40} aria-hidden />
               <h1 className="mt-3 text-xl font-semibold">Confira seu e-mail</h1>
-              <p className="mt-1 text-sm text-muted">Enviamos um link para <strong>{email}</strong>. Abra no mesmo aparelho e navegador em que pediu. Vale por 1 hora. Se não achar, olhe o spam.</p>
-              <button type="button" onClick={() => setSent(false)} className="mt-4 text-sm font-semibold text-brand underline">Usar outro e-mail</button>
+              <p className="mt-1 text-sm text-muted">Se existir uma conta com <strong>{email}</strong>, enviamos um link para definir a senha. Abra no mesmo aparelho e navegador. Vale por 1 hora. Se não achar, olhe o spam.</p>
+              <button type="button" onClick={() => { setModo("senha"); setSent(false); }} className="mt-4 text-sm font-semibold text-brand underline">Voltar para entrar</button>
             </div>
           )}
 
