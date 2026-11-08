@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { MailCheck } from "lucide-react";
-import { Card, PrototypeBanner } from "@/components/ui";
+import { Card } from "@/components/ui";
 import { hasSupabase, supabaseBrowser } from "@/lib/supabase-browser";
 
 const input =
@@ -29,7 +29,6 @@ export default function EntrarPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <PrototypeBanner />
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center p-4">
         <Card>
           {!sent ? (
@@ -89,14 +88,6 @@ export default function EntrarPage() {
                   ? <>Enviamos um link para <strong>{email}</strong>. Abra no mesmo aparelho e navegador em que pediu. Vale por 1 hora.</>
                   : <>No sistema real, enviaríamos o link para <strong>{email}</strong>. Neste protótipo, nenhum e-mail é enviado.</>}
               </p>
-              {!hasSupabase && (
-                <Link
-                  href="/indicador"
-                  className="mt-5 inline-block rounded-brand bg-brand px-4 py-3 text-sm font-medium text-brand-fg"
-                >
-                  Abrir painel de exemplo
-                </Link>
-              )}
             </div>
           )}
         </Card>

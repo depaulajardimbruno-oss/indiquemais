@@ -19,7 +19,7 @@ export default function CallbackPage() {
       if (error) return setErro("Este link já foi usado ou venceu. Peça um novo na tela de entrada.");
       const { data: isAdmin } = await sb.rpc("is_platform_admin");
       const seguro = destino && destino.startsWith("/") && !destino.startsWith("//") ? destino : null;
-      location.replace(seguro ?? (isAdmin === true ? "/admin" : "/indicador"));
+      location.replace(seguro ?? (isAdmin === true ? "/admin" : "/conta"));
     })();
   }, []);
 

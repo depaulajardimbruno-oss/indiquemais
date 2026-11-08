@@ -21,7 +21,8 @@ Documento de retomada: o que existe, o que foi decidido e o que falta.
 Testes locais: `supabase/tests/run_local.sh` (0 FAIL/ERROR na última rodada). Detalhes em `docs/BANCO-DE-DADOS.md`.
 
 ## Site
-- Protótipo visual completo (admin, empresa, indicador, páginas públicas) com dados fictícios. Porta de entrada: `/prototipo`.
+- Em 07/11/2026 o protótipo foi tirado do site e o banco foi limpo (sobrou só a conta admin e as configurações). O protótipo completo está guardado na branch `arquivo/prototipo-v1` (consulte com `git show arquivo/prototipo-v1:app/...`). Ao ligar cada tela real, reaproveite o layout de lá.
+- Hoje o site tem: página inicial, `/entrar`, `/auth/callback`, `/convite/[token]`, `/termos`, `/conta` e `/admin` (início com contagens reais).
 - **Real:** login por link no e-mail (`/entrar`, `/auth/callback`) e proteção do painel `/admin` (só administradores).
 - Supabase Auth configurado: Site URL `https://indiquemais.vercel.app`; redirects `/auth/callback` na produção e em `localhost:3100`.
 

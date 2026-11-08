@@ -1,4 +1,4 @@
-import { STAGES, type Stage } from "@/lib/indicador";
+import { STAGES, type Stage } from "@/lib/etapas";
 
 /** Linha de etapas de uma indicação: o indicador vê em que ponto está, sem ver valores nem endereço. */
 export function StageProgress({ stage }: { stage: Stage }) {

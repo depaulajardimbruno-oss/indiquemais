@@ -178,15 +178,15 @@ export default async function Home() {
                 ganha uma comissão. Simples, automático e transparente.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/cadastro" className={btnPrimary}>
-                  Quero indicar e ganhar
+                <Link href="/entrar" className={btnPrimary}>
+                  Entrar
                 </Link>
                 <a href="#empresas" className={btnSecondary}>
                   Tenho uma empresa
                 </a>
               </div>
               <p className="mt-4 text-base text-muted">
-                Cadastro gratuito para clientes e profissionais.
+                O cadastro é feito pelo link que a empresa parceira envia para você.
               </p>
             </div>
 
@@ -334,11 +334,6 @@ export default async function Home() {
                 Sem venda, sem custo.
               </p>
             </div>
-            <div className="mt-8">
-              <Link href="/empresa" className={btnPrimary}>
-                Ver o painel da empresa
-              </Link>
-            </div>
           </div>
         </section>
 
@@ -390,7 +385,7 @@ export default async function Home() {
               Pronto para transformar indicações em oportunidades? Cadastre-se e comece a ganhar.
             </h2>
             <Link
-              href="/cadastro"
+              href="/entrar"
               className="inline-flex min-h-12 items-center justify-center rounded-full bg-accent px-7 py-3 text-base font-bold text-ink hover:brightness-95"
             >
               Entrar para indicar
@@ -406,8 +401,7 @@ export default async function Home() {
           </p>
           <nav aria-label="Rodapé" className="flex flex-wrap gap-x-6 gap-y-2">
             <Link href="/entrar" className="hover:text-brand">Entrar</Link>
-            <Link href="/orcamento" className="hover:text-brand">Fui indicado por alguém</Link>
-            <Link href="/prototipo" className="hover:text-brand">Telas do protótipo</Link>
+            <Link href="/termos" className="hover:text-brand">Termos e dados</Link>
           </nav>
         </div>
       </footer>

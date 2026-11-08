@@ -143,7 +143,7 @@ export function ConviteFlow({ token }: { token: string }) {
         <p className="mt-1 break-all font-mono text-xs">{link}</p>
         <button onClick={copiar} className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-brand underline"><Copy size={14} aria-hidden /> {copied ? "Copiado" : "Copiar link"}</button>
       </div>
-      <Link href="/indicador" className={`${btn} mt-4`}>Ir para o meu painel</Link>
+      <p className="mt-4 text-center text-sm text-muted">Guarde o seu link e o seu código. O painel para acompanhar indicações e comissões chega em breve; você entra com este mesmo e-mail.</p>
     </Card>
   );
 
