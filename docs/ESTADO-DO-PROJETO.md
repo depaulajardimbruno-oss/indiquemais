@@ -27,6 +27,7 @@ Testes locais: `supabase/tests/run_local.sh` (0 FAIL/ERROR na última rodada). D
 - Fluxo de cadastro (07/11): empresa pede em `/cadastro-empresa` e o admin aprova em Empresas (cria a empresa e libera o responsável); indicador entra pelo convite da empresa ou pelo site em `/cadastro` (cadastro completo + escolhe empresas da vitrine). Cada empresa escolhe: só por convite, com aprovação (padrão) ou aberta. Pedidos pendentes aparecem em Indicadores da empresa. Indicador acompanha em `/conta`.
 - Admin `/admin`: visão geral (números, funil, dinheiro, por empresa), empresas (pedidos, acessos, plano, dados legais, abas), indicadores, produtos, indicações e vendas, comissões.
 - 07/11 (noite): tela de Indicações na empresa (abas por etapa, chamar no WhatsApp, orçamento enviado, fechou com valor + contrato e prévia da comissão, instalado e pago, não fechou); painel do indicador em `/conta` (a receber, recebido, indicações com etapa, comissão e data de liberação, chave PIX, confirmar indicações declaradas, compartilhar no WhatsApp); PIX saiu do cadastro e é exigido para pagar; tela de pedido enviado para o amigo com botão para falar com a empresa.
+- 08/11: página inicial refeita no estilo do piloto indikimais.com.br (preto + laranja #ff6600, fonte Inter, leão, 3 passos, recursos, preços Mensal 397 / Semestral 297 / Anual 197). Redirects `/login` → `/entrar` e `/register` → `/cadastro` ou `/cadastro-empresa` (user_type=empresa), para os links antigos funcionarem quando o DNS mudar. Cores também atualizadas em `brand_settings`. Sem depoimentos e sem teste grátis de 7 dias por enquanto.
 - Falta: pagamentos (liberar comissões, fechar o mês, pagar), admin de empresas/planos/cobrança, SMTP próprio.
 - **Real:** login por link no e-mail (`/entrar`, `/auth/callback`) e proteção do painel `/admin` (só administradores).
 - Supabase Auth configurado: Site URL `https://indiquemais.vercel.app`; redirects `/auth/callback` na produção e em `localhost:3100`.
@@ -41,6 +42,8 @@ Testes locais: `supabase/tests/run_local.sh` (0 FAIL/ERROR na última rodada). D
 7. Definir preços dos planos, nomes e benefícios do ranking.
 8. Agendar o recálculo de selos e ranking; rotina de anonimização (LGPD).
 9. Higiene de dados: banco único mistura teste e dados reais.
+10. Troca de DNS para indikimais.com.br: adicionar o domínio na Vercel e trocar Site URL + redirects no Supabase Auth.
+11. Decidir preços: os da página (397/297/197) não batem com os planos do banco (Inicial…Avançado+).
 
 ## Como trabalhar
 - Branches: develop → staging → main, promovendo com merge. Commits com `Co-Authored-By` e `Claude-Session`.
