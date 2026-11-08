@@ -168,3 +168,12 @@ fechadas. Mudar de plano não altera vendas passadas. A visão `company_platform
 - Visões: `company_my_companies` (empresas que a pessoa acessa e o papel), `company_indicators` (agora com origem convite/manual, cadastro completo e vendas; sem CPF/PIX), `company_offers` (produtos com indicações, vendas e em andamento).
 - `referral_link_info(code)` público: empresa, primeiro nome de quem indicou e produtos ativos (sem valores de comissão), para a página `/i/CÓDIGO`.
 - Testes: `supabase/tests/company_panel.sql`.
+
+## Migração 12: empresas e acessos pelo admin
+
+- `admin_create_company` e `admin_update_company_legal` (CNPJ validado com dígitos, `is_valid_cnpj`), plano no cadastro.
+- `company_grant_access(empresa, e-mail, papel)`: e-mail com conta vira membro na hora; sem conta gera convite de acesso (`company_member_invites`, link `/acesso/TOKEN`, 14 dias, só para aquele e-mail). Admin do Indiki+ e admin da empresa podem usar.
+- `accept_access_invite`, `access_invite_info` (público), `company_revoke_access` (nunca o último admin; registra `REMOVE_ACESSO` na auditoria), `company_set_member_role`, `company_cancel_access_invite`.
+- `company_members` deixa de ser "nunca apagar": o vínculo é removido só pelas funções acima.
+- Visões `company_team` (membros + convites pendentes) e `admin_companies`. Corrige `company_my_companies` (lia o plano por uma função sem permissão).
+- Testes: `supabase/tests/company_access.sql`.

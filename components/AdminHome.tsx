@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Card, PageHeader } from "@/components/ui";
 import { hasSupabase, supabaseBrowser } from "@/lib/supabase-browser";
@@ -31,6 +32,7 @@ export function AdminHome() {
           </Card>
         ))}
       </div>
+      <Link href="/admin/empresas" className="mt-6 inline-block rounded-brand bg-brand px-4 py-3 text-sm font-semibold text-brand-fg hover:opacity-90">Gerenciar empresas e acessos</Link>
     </>
   );
 }

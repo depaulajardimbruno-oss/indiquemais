@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { Building2, Home, Tag, Users, type LucideIcon } from "lucide-react";
+import { Building2, Home, Tag, UserCog, Users, type LucideIcon } from "lucide-react";
 import { Card } from "@/components/ui";
 import { hasSupabase, supabaseBrowser } from "@/lib/supabase-browser";
 
@@ -32,6 +32,7 @@ export const NAV: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/empresa", label: "Início", icon: Home },
   { href: "/empresa/produtos", label: "Produtos", icon: Tag },
   { href: "/empresa/indicadores", label: "Indicadores", icon: Users },
+  { href: "/empresa/equipe", label: "Equipe", icon: UserCog },
   { href: "/empresa/dados", label: "Dados da empresa", icon: Building2 },
 ];
 const ativo = (path: string, href: string) => (href === "/empresa" ? path === href : path.startsWith(href));
@@ -117,7 +118,7 @@ export function EmpresaShell({ logo, children }: { logo: React.ReactNode; childr
             <div className="mx-auto max-w-5xl">{children}</div>
           </main>
         </div>
-        <nav className="fixed inset-x-0 bottom-0 z-10 grid grid-cols-4 border-t border-line bg-white md:hidden" aria-label="Navegação da empresa">
+        <nav className="fixed inset-x-0 bottom-0 z-10 grid grid-cols-5 border-t border-line bg-white md:hidden" aria-label="Navegação da empresa">
           {NAV.map(({ href, label, icon: Icon }) => (
             <Link key={href} href={href} aria-current={ativo(path, href) ? "page" : undefined}
               className={`flex flex-col items-center gap-1 py-2 text-xs font-medium ${ativo(path, href) ? "text-brand" : "text-muted"}`}>

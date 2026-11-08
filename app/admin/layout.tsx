@@ -16,10 +16,11 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
             <Logo name={brand.name} logoUrl={brand.logoUrl} height={28} />
             <span className="rounded-full bg-accent/25 px-2 py-0.5 text-xs font-semibold text-ink">Admin</span>
           </Link>
-          <div className="flex items-center gap-3">
-            <Link href="/empresa" className="text-sm font-medium text-brand underline">Painel das empresas</Link>
+          <nav aria-label="Administração" className="flex items-center gap-4 text-sm font-medium">
+            <Link href="/admin" className="hover:text-brand">Início</Link>
+            <Link href="/admin/empresas" className="hover:text-brand">Empresas</Link>
             <SignOutButton />
-          </div>
+          </nav>
         </div>
       </header>
       <main className="mx-auto w-full max-w-6xl flex-1 p-4 md:p-8">
