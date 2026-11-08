@@ -51,7 +51,7 @@ export function Inicio() {
       <div className="grid gap-4 sm:grid-cols-3">
         <Card><p className="text-sm text-muted">Indicadores ativos</p><p className="mt-1 text-3xl font-semibold tabular-nums">{limite(n?.indicadores, plano?.max_active_referrers)}</p></Card>
         <Card><p className="text-sm text-muted">Produtos ativos</p><p className="mt-1 text-3xl font-semibold tabular-nums">{limite(n?.produtos, plano?.max_offers)}</p></Card>
-        <Card><p className="text-sm text-muted">Indicações em andamento</p><p className="mt-1 text-3xl font-semibold tabular-nums">{n?.abertas ?? "…"}</p></Card>
+        <Link href="/empresa/indicacoes" className="rounded-brand border border-line bg-white p-5 hover:border-brand"><p className="text-sm text-muted">Indicações em andamento</p><p className="mt-1 text-3xl font-semibold tabular-nums">{n?.abertas ?? "…"}</p></Link>
       </div>
 
       {n && passos.some((p) => !p.ok) && (

@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Check, Copy, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Card } from "@/components/ui";
 import { useOrigin } from "@/components/useOrigin";
 import { SignOutButton } from "@/components/SignOutButton";
 import { hasSupabase, supabaseBrowser } from "@/lib/supabase-browser";
 import { dataBR } from "@/lib/rotulos";
+import { Compartilhar, PainelIndicador } from "@/components/indicador/PainelIndicador";
 
 type Vinculo = { id: string; company_id: string; company_name: string; code: string; request_status: string; active: boolean; requested_at: string | null; decided_at: string | null; decision_note: string | null; archived: boolean };
 
@@ -18,7 +19,6 @@ export function MinhaConta() {
   const [completo, setCompleto] = useState(false);
   const [vinculos, setVinculos] = useState<Vinculo[]>([]);
   const [atalhos, setAtalhos] = useState<{ admin: boolean; empresa: boolean }>({ admin: false, empresa: false });
-  const [copiado, setCopiado] = useState("");
 
   useEffect(() => {
     if (!hasSupabase) return;
@@ -48,9 +48,6 @@ export function MinhaConta() {
     </Card>
   );
 
-  async function copiar(code: string) {
-    try { await navigator.clipboard.writeText(`${origin}/i/${code}`); setCopiado(code); setTimeout(() => setCopiado(""), 2000); } catch { /* link visível */ }
-  }
   const situ = (v: Vinculo) =>
     v.request_status === "pendente" ? ["Aguardando a empresa", "bg-amber-100 text-amber-800"]
     : v.request_status === "recusado" ? ["Recusado", "bg-rose-100 text-rose-800"]
@@ -95,10 +92,9 @@ export function MinhaConta() {
                   <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${c}`}>{t}</span>
                 </div>
                 {ok && (
-                  <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
-                    <span className="font-mono text-xs">{v.code}</span>
-                    <span className="truncate font-mono text-xs text-muted">{origin}/i/{v.code}</span>
-                    <button onClick={() => copiar(v.code)} className="inline-flex items-center gap-1 text-sm font-medium text-brand underline">{copiado === v.code ? <Check size={14} aria-hidden /> : <Copy size={14} aria-hidden />} {copiado === v.code ? "Copiado" : "Copiar link"}</button>
+                  <div className="mt-2">
+                    <p className="truncate font-mono text-xs text-muted">{origin}/i/{v.code}</p>
+                    <Compartilhar empresa={v.company_name} link={`${origin}/i/${v.code}`} />
                   </div>
                 )}
                 {v.request_status === "pendente" && <p className="mt-1 text-xs text-muted">Pedido enviado em {dataBR(v.requested_at)}.</p>}
@@ -108,7 +104,7 @@ export function MinhaConta() {
           })}
         </ul>
       </Card>
-      <p className="text-sm text-muted">O acompanhamento das indicações e comissões entra aqui em breve.</p>
+      {completo && <PainelIndicador temVinculo={vinculos.some((v) => v.active)} />}
     </div>
   );
 }

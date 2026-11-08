@@ -189,3 +189,11 @@ fechadas. Mudar de plano não altera vendas passadas. A visão `company_platform
 - Vitrine: `companies.listing_mode` (`fechado` só convite; `aprovacao` padrão, pedido fica pendente; `aberto` entra na hora) e `public_description`; `company_set_listing`; `public_companies()` público.
 - Indicador pelo site: `indicator_request_company` (exige cadastro completo; adota cadastro prévio da empresa; reabre pedido recusado). `referrer_links.request_status` (`pendente`/`aprovado`/`recusado`) — pendente/recusado nunca ativo. Empresa decide com `company_decide_indicator_request` (recusado é arquivado, com motivo). Indicador acompanha em `indicator_my_companies`.
 - Testes: `supabase/tests/signup_requests.sql`.
+
+## Migração 15: PIX na hora de receber e painéis
+
+- `indicator_register`: CPF continua obrigatório (evita cadastro duplicado); chave PIX opcional e, se vier vazia, mantém a que já existe. `indicator_set_pix` para cadastrar/trocar depois.
+- Gatilho `trg_commission_requires_pix`: comissão não vira "paga" sem chave PIX do indicador.
+- `referral_link_info` devolve `company_phone` (botão "Falar com a empresa" depois do pedido).
+- `indicator_my_referrals` (indicações do indicador com a comissão; sem valor da venda). `company_referrals` passa a trazer a regra congelada e a data de liberação.
+- Testes: `supabase/tests/pix_panel.sql`.

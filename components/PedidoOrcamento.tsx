@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, MessageCircle, XCircle } from "lucide-react";
 import { Card } from "@/components/ui";
 import { hasSupabase, supabaseBrowser } from "@/lib/supabase-browser";
 import { maskPhone, onlyDigits } from "@/lib/cadastro";
 
 const field = "mt-1 w-full rounded-brand border border-line bg-white px-3 py-3 text-base outline-none focus:border-brand focus:ring-2 focus:ring-brand-line";
 const CONSENT_VERSION = "orcamento-v1";
-type Info = { company_name: string; referrer_first_name: string; offers: { id: string; name: string; description: string | null }[] };
+type Info = { company_name: string; referrer_first_name: string; offers: { id: string; name: string; description: string | null }[]; company_phone: string | null };
 
 /** Página do link de indicação: o amigo pede orçamento e a indicação fica registrada para quem indicou. */
 export function PedidoOrcamento({ code }: { code: string }) {
@@ -50,13 +50,30 @@ export function PedidoOrcamento({ code }: { code: string }) {
       <p className="mt-1 text-sm text-muted">Este código não existe ou está pausado. Confira com quem te mandou o link.</p>
     </Card>
   );
-  if (enviado) return (
-    <Card className="text-center">
-      <CheckCircle2 className="mx-auto text-emerald-600" size={44} aria-hidden />
-      <h1 className="mt-3 text-2xl font-semibold">Pedido enviado</h1>
-      <p className="mt-1 text-sm text-muted">A {info.company_name} vai entrar em contato pelo telefone informado para combinar o orçamento. {info.referrer_first_name} fica registrado(a) como quem indicou.</p>
-    </Card>
-  );
+  if (enviado) {
+    const produto = info.offers.find((o) => o.id === f.offer)?.name ?? "o orçamento";
+    const tel = onlyDigits(info.company_phone ?? "").slice(-11);
+    const zap = tel.length >= 10 ? `https://wa.me/55${tel}?text=${encodeURIComponent(`Olá! Sou ${f.name.split(" ")[0]}, ${info.referrer_first_name} me indicou e acabei de pedir orçamento de ${produto} pelo Indiki+.`)}` : null;
+    return (
+      <Card>
+        <div className="text-center">
+          <CheckCircle2 className="mx-auto text-emerald-600" size={44} aria-hidden />
+          <h1 className="mt-3 text-2xl font-semibold">Pedido enviado</h1>
+          <p className="mt-1 text-sm text-muted">Obrigado, {f.name.split(" ")[0]}! Seu pedido de {produto} chegou na {info.company_name}.</p>
+        </div>
+        <ol className="mt-5 space-y-3 text-sm">
+          <li className="flex gap-3"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand text-xs font-semibold text-brand-fg">1</span><span>A {info.company_name} vai te chamar no WhatsApp <strong>{f.phone}</strong> para entender o que você precisa.</span></li>
+          <li className="flex gap-3"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand text-xs font-semibold text-brand-fg">2</span><span>Você recebe o orçamento sem compromisso.</span></li>
+          <li className="flex gap-3"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand text-xs font-semibold text-brand-fg">3</span><span>Se você fechar, {info.referrer_first_name} recebe da empresa uma comissão por ter indicado.</span></li>
+        </ol>
+        {zap && (
+          <a href={zap} target="_blank" rel="noreferrer" className="mt-5 flex min-h-11 items-center justify-center gap-2 rounded-brand bg-[#1f8f4e] px-4 py-3 text-sm font-semibold text-white hover:opacity-90">
+            <MessageCircle size={16} aria-hidden /> Falar agora com a {info.company_name}
+          </a>
+        )}
+      </Card>
+    );
+  }
   if (info.offers.length === 0) return (
     <Card className="text-center">
       <h1 className="text-xl font-semibold">{info.referrer_first_name} indicou a {info.company_name}</h1>

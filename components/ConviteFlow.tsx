@@ -1,12 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { CheckCircle2, Copy, Loader2, XCircle } from "lucide-react";
+import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { Card } from "@/components/ui";
 import { hasSupabase, supabaseBrowser } from "@/lib/supabase-browser";
 import { useOrigin } from "@/components/useOrigin";
 import { ContaPasso } from "@/components/indicador/ContaPasso";
 import { FormCadastro } from "@/components/indicador/FormCadastro";
+import { Compartilhar } from "@/components/indicador/PainelIndicador";
 
 type Step = "carregando" | "invalido" | "conta" | "cadastro" | "pronto" | "indisponivel";
 
@@ -17,7 +18,6 @@ export function ConviteFlow({ token }: { token: string }) {
   const [company, setCompany] = useState("");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
-  const [copied, setCopied] = useState(false);
 
   const iniciar = useCallback(async () => {
     const sb = supabaseBrowser();
@@ -65,10 +65,9 @@ export function ConviteFlow({ token }: { token: string }) {
       <div className="mt-4 rounded-brand bg-brand-soft p-3 text-sm">
         <p className="font-medium">Seu link de indicação</p>
         <p className="mt-1 break-all font-mono text-xs">{link}</p>
-        <button onClick={async () => { try { await navigator.clipboard.writeText(link); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch { /* texto fica visível */ } }}
-          className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-brand underline"><Copy size={14} aria-hidden /> {copied ? "Copiado" : "Copiar link"}</button>
+        <Compartilhar empresa={company} link={link} />
       </div>
-      <a href="/conta" className="mt-4 block text-center text-sm font-medium text-brand underline">Ver minhas empresas</a>
+      <a href="/conta" className="mt-4 block text-center text-sm font-medium text-brand underline">Ir para minha conta: indicações, comissões e chave PIX</a>
     </Card>
   );
   return (

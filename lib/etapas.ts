@@ -5,6 +5,6 @@ export const STAGES: { key: Exclude<Stage, "perdido">; label: string; hint: stri
   { key: "indicado", label: "Indicado", hint: "A empresa recebeu o pedido de orçamento." },
   { key: "orcamento", label: "Orçamento", hint: "O orçamento foi enviado ao seu amigo." },
   { key: "fechou", label: "Fechou", hint: "Seu amigo fechou com a empresa." },
-  { key: "instalada", label: "Instalado e pago", hint: "A obra foi feita e paga. Sua comissão é liberada." },
+  { key: "instalada", label: "Instalado e pago", hint: "O serviço foi feito e pago. Sua comissão é liberada depois do prazo de carência." },
   { key: "paga", label: "Comissão paga", hint: "O Indiki+ pagou a sua comissão." },
 ];

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { Building2, Home, Tag, UserCog, Users, type LucideIcon } from "lucide-react";
+import { Building2, ClipboardList, Home, Tag, UserCog, Users, type LucideIcon } from "lucide-react";
 import { Card } from "@/components/ui";
 import { hasSupabase, supabaseBrowser } from "@/lib/supabase-browser";
 
@@ -31,6 +31,7 @@ const gravar = (id: string) => { try { localStorage.setItem(CHAVE, id); } catch 
 
 export const NAV: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/empresa", label: "Início", icon: Home },
+  { href: "/empresa/indicacoes", label: "Indicações", icon: ClipboardList },
   { href: "/empresa/produtos", label: "Produtos", icon: Tag },
   { href: "/empresa/indicadores", label: "Indicadores", icon: Users },
   { href: "/empresa/equipe", label: "Equipe", icon: UserCog },
@@ -114,13 +115,13 @@ export function EmpresaShell({ logo, children }: { logo: React.ReactNode; childr
           <main className="min-w-0 flex-1 p-4 pb-24 md:p-8 md:pb-8">
             <div className="mb-4 flex items-center justify-between gap-3 md:hidden">
               <SeletorEmpresa empresas={empresas} id={e.id} trocar={trocar} />
-              <Sair />
+              <div className="flex items-center gap-3 text-sm"><Link href="/empresa/equipe" className="font-medium text-brand underline">Equipe</Link><Sair /></div>
             </div>
             <div className="mx-auto max-w-5xl">{children}</div>
           </main>
         </div>
         <nav className="fixed inset-x-0 bottom-0 z-10 grid grid-cols-5 border-t border-line bg-white md:hidden" aria-label="Navegação da empresa">
-          {NAV.map(({ href, label, icon: Icon }) => (
+          {NAV.filter((n) => n.href !== "/empresa/equipe").map(({ href, label, icon: Icon }) => (
             <Link key={href} href={href} aria-current={ativo(path, href) ? "page" : undefined}
               className={`flex flex-col items-center gap-1 py-2 text-xs font-medium ${ativo(path, href) ? "text-brand" : "text-muted"}`}>
               <Icon size={20} aria-hidden /> {label === "Dados da empresa" ? "Dados" : label}
