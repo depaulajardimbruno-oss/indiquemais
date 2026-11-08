@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { MessageCircle, Search } from "lucide-react";
+import { MessageCircle, Plus, Search, X } from "lucide-react";
 import { Card, PageHeader } from "@/components/ui";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 import { brl, calcCommission, describeRule, parseMoney } from "@/lib/comissao";
-import { onlyDigits } from "@/lib/cadastro";
+import { maskPhone, onlyDigits } from "@/lib/cadastro";
 import { COMISSAO, ETAPA, Selo, dataBR } from "@/lib/rotulos";
 import { useEmpresa } from "@/components/empresa/EmpresaContext";
 
@@ -41,6 +41,7 @@ export function Indicacoes() {
   const [lista, setLista] = useState<Ref[] | null>(null);
   const [aba, setAba] = useState<Aba>("novas");
   const [busca, setBusca] = useState("");
+  const [registrar, setRegistrar] = useState(false);
 
   const carregar = useCallback(async () => {
     const { data } = await supabaseBrowser().from("company_referrals").select("*").eq("company_id", empresa.id).order("created_at", { ascending: false });
@@ -57,7 +58,9 @@ export function Indicacoes() {
 
   return (
     <>
-      <PageHeader title="Indicações" subtitle="Pedidos de orçamento que chegaram por indicação. Avance cada um conforme o atendimento: é isso que gera a comissão do indicador." />
+      <PageHeader title="Indicações" subtitle="Pedidos de orçamento que chegaram por indicação. Avance cada um conforme o atendimento: é isso que gera a comissão do indicador."
+        action={<button onClick={() => setRegistrar(true)} className="inline-flex min-h-11 items-center gap-2 rounded-brand bg-brand px-4 py-2 text-sm font-semibold text-brand-fg hover:opacity-90"><Plus size={16} aria-hidden /> Registrar indicação</button>} />
+      {registrar && <Registrar existentes={lista ?? []} onFechar={() => setRegistrar(false)} onCriado={async () => { setRegistrar(false); setAba("novas"); await carregar(); }} />}
       <div role="tablist" aria-label="Etapas" className="mb-4 flex gap-1 overflow-x-auto border-b border-line">
         {ABAS.map(([k, l]) => (
           <button key={k} role="tab" aria-selected={aba === k} onClick={() => setAba(k)}
@@ -145,7 +148,14 @@ function Item({ r, empresaNome, onMudou }: { r: Ref; empresaNome: string; onMudo
             <button className={btn} disabled={busy} onClick={() => setModo("perder")}>Não fechou</button>
           </div>
         )}
-        {semIndicador && r.stage === "orcamento" && modo === null && <p className="mt-2 text-xs text-amber-700">Para fechar, o indicador precisa estar confirmado.</p>}
+        {r.awaiting_referrer_confirmation && !["perdido"].includes(r.stage) && modo === null && (
+          <p className="mt-2 text-xs text-amber-800">
+            Aguardando {r.referrer_name?.split(" ")[0] ?? "o indicador"} confirmar em Minha conta. Sem isso a venda não pode ser fechada.{" "}
+            {wa(r.referrer_phone, `Olá! Aqui é da ${empresaNome}. Registramos que você indicou ${first}. Confirme a indicação em ${typeof window !== "undefined" ? location.origin : ""}/conta para garantir a sua comissão.`) && (
+              <a className="font-medium underline" target="_blank" rel="noreferrer" href={wa(r.referrer_phone, `Olá! Aqui é da ${empresaNome}. Registramos que você indicou ${first}. Confirme a indicação em ${typeof window !== "undefined" ? location.origin : ""}/conta para garantir a sua comissão.`)!}>Avisar no WhatsApp</a>
+            )}
+          </p>
+        )}
 
         {modo === "fechar" && (
           <form onSubmit={(e) => { e.preventDefault(); if (!valorCents) return setErro("Informe o valor total do contrato."); if (!contrato.trim()) return setErro("Informe o número do contrato ou pedido."); void mudar("fechou", { valor: valorCents, contrato }); }}
@@ -177,5 +187,119 @@ function Item({ r, empresaNome, onMudou }: { r: Ref; empresaNome: string; onMudo
         {erro && <p role="alert" className="mt-2 text-sm text-red-700">{erro}</p>}
       </Card>
     </li>
+  );
+}
+
+type Ind = { id: string; full_name: string; code: string; phone: string | null; email: string | null; active: boolean; request_status: string };
+type Prod = { id: string; name: string };
+
+/** Cliente que chegou por fora do link (WhatsApp, loja, telefone) e disse quem indicou. */
+function Registrar({ existentes, onFechar, onCriado }: { existentes: Ref[]; onFechar: () => void; onCriado: () => Promise<void> }) {
+  const { empresa } = useEmpresa();
+  const [inds, setInds] = useState<Ind[]>([]);
+  const [prods, setProds] = useState<Prod[]>([]);
+  const [f, setF] = useState({ name: "", phone: "", offer: "", note: "", consent: false });
+  const [q, setQ] = useState("");
+  const [escolhido, setEscolhido] = useState<Ind | null>(null);
+  const [erro, setErro] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    const sb = supabaseBrowser();
+    sb.from("company_indicators").select("id, full_name, code, phone, email, active, request_status").eq("company_id", empresa.id).eq("active", true).eq("request_status", "aprovado").order("full_name")
+      .then(({ data }) => setInds((data ?? []) as Ind[]));
+    sb.from("company_offers").select("id, name").eq("company_id", empresa.id).eq("active", true).order("name")
+      .then(({ data }) => { const l = (data ?? []) as Prod[]; setProds(l); if (l.length === 1) setF((p) => ({ ...p, offer: l[0].id })); });
+  }, [empresa.id]);
+
+  const achados = useMemo(() => {
+    const t = q.trim().toLowerCase(); const d = onlyDigits(q);
+    if (t.length < 2) return [];
+    return inds.filter((i) => i.full_name.toLowerCase().includes(t) || i.code.toLowerCase().includes(t) || (d.length >= 4 && onlyDigits(i.phone ?? "").includes(d))).slice(0, 6);
+  }, [q, inds]);
+  const fone = onlyDigits(f.phone).slice(-11);
+  const repetido = fone.length >= 10 ? existentes.find((r) => onlyDigits(r.friend_phone).slice(-11) === fone && ["indicado", "orcamento", "fechou"].includes(r.stage)) : undefined;
+
+  async function salvar(e: React.FormEvent) {
+    e.preventDefault();
+    if (!escolhido) return setErro("Escolha quem indicou.");
+    if (!f.offer) return setErro("Escolha o produto.");
+    if (!f.consent) return setErro("Confirme que o cliente autorizou.");
+    setBusy(true); setErro("");
+    const { error } = await supabaseBrowser().rpc("company_register_referral", {
+      p_company: empresa.id, p_offer: f.offer, p_friend_name: f.name, p_friend_phone: f.phone, p_link: escolhido.id, p_client_consent: f.consent, p_note: f.note || null,
+    });
+    setBusy(false);
+    if (error) return setErro(error.message);
+    await onCriado();
+  }
+
+  return (
+    <Card className="mb-6 border-2 border-accent">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-semibold">Registrar indicação</h2>
+          <p className="text-sm text-muted">Para o cliente que procurou vocês direto e disse quem indicou. O indicador confirma no painel dele antes de a venda poder ser fechada.</p>
+        </div>
+        <button onClick={onFechar} aria-label="Fechar" className="rounded-brand p-2 hover:bg-brand-soft"><X size={18} aria-hidden /></button>
+      </div>
+      {prods.length === 0 && <p className="mt-3 rounded-brand bg-amber-50 p-3 text-sm text-amber-900">Cadastre um produto ativo antes de registrar indicações.</p>}
+      <form onSubmit={salvar} className="mt-4 space-y-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="block text-sm font-medium">Nome do cliente
+            <input required className={field} value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />
+          </label>
+          <label className="block text-sm font-medium">Telefone do cliente (WhatsApp)
+            <input required type="tel" className={field} value={f.phone} onChange={(e) => setF({ ...f, phone: maskPhone(e.target.value) })} placeholder="(00) 00000-0000" />
+          </label>
+        </div>
+        {repetido && (
+          <p role="status" className="rounded-brand bg-amber-50 p-3 text-sm text-amber-900">
+            Este telefone já tem uma indicação em andamento: <strong>{repetido.friend_name}</strong>, {repetido.offer_name}, {repetido.referrer_name ? `indicado por ${repetido.referrer_name}` : "sem indicador"} ({ETAPA[repetido.stage]?.label}). Use essa em vez de registrar outra.
+          </p>
+        )}
+        <label className="block text-sm font-medium">Produto
+          <select className={field} value={f.offer} onChange={(e) => setF({ ...f, offer: e.target.value })}>
+            <option value="">Escolha</option>
+            {prods.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+          </select>
+        </label>
+        <div>
+          <p className="text-sm font-medium">Quem indicou</p>
+          {escolhido ? (
+            <div className="mt-1 flex flex-wrap items-center justify-between gap-2 rounded-brand border border-brand bg-brand-soft p-3 text-sm">
+              <span><strong>{escolhido.full_name}</strong> <span className="font-mono text-xs text-muted">{escolhido.code}</span>{escolhido.phone ? ` · ${escolhido.phone}` : ""}</span>
+              <button type="button" onClick={() => { setEscolhido(null); setQ(""); }} className="text-sm text-brand underline">Trocar</button>
+            </div>
+          ) : (
+            <>
+              <input className={field} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Digite o nome, o código (ex.: BRUNO-F5EU) ou o telefone do indicador" aria-label="Buscar indicador" />
+              {q.trim().length >= 2 && (
+                <ul className="mt-1 divide-y divide-line rounded-brand border border-line bg-white">
+                  {achados.length === 0 && <li className="p-3 text-sm text-muted">Ninguém encontrado. Se a pessoa ainda não indica a sua empresa, cadastre-a em Indicadores primeiro.</li>}
+                  {achados.map((i) => (
+                    <li key={i.id}><button type="button" onClick={() => setEscolhido(i)} className="block w-full p-3 text-left text-sm hover:bg-brand-soft">
+                      <strong>{i.full_name}</strong> <span className="font-mono text-xs text-muted">{i.code}</span>{i.phone ? <span className="text-muted"> · {i.phone}</span> : null}
+                    </button></li>
+                  ))}
+                </ul>
+              )}
+            </>
+          )}
+        </div>
+        <label className="block text-sm font-medium">Observação (opcional)
+          <input className={field} value={f.note} onChange={(e) => setF({ ...f, note: e.target.value })} placeholder="Ex.: veio pela loja, falou com o vendedor João" />
+        </label>
+        <label className="flex items-start gap-2 text-sm">
+          <input type="checkbox" className="mt-1" checked={f.consent} onChange={(e) => setF({ ...f, consent: e.target.checked })} />
+          <span>O cliente autorizou o uso do nome e telefone dele para registrar a indicação.</span>
+        </label>
+        {erro && <p role="alert" className="text-sm text-red-700">{erro}</p>}
+        <div className="flex gap-2">
+          <button type="submit" disabled={busy || prods.length === 0} className={primary}>{busy ? "Registrando…" : "Registrar indicação"}</button>
+          <button type="button" onClick={onFechar} className={btn}>Cancelar</button>
+        </div>
+      </form>
+    </Card>
   );
 }

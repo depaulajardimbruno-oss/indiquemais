@@ -197,3 +197,8 @@ fechadas. Mudar de plano não altera vendas passadas. A visão `company_platform
 - `referral_link_info` devolve `company_phone` (botão "Falar com a empresa" depois do pedido).
 - `indicator_my_referrals` (indicações do indicador com a comissão; sem valor da venda). `company_referrals` passa a trazer a regra congelada e a data de liberação.
 - Testes: `supabase/tests/pix_panel.sql`.
+
+## Migração 16: empresa registra indicação recebida por fora
+
+- `company_register_referral(empresa, produto, cliente, telefone, indicador, autorização do cliente, observação)`: para o cliente que procurou a empresa direto e disse quem indicou. Qualquer membro da empresa registra; o indicador é escolhido na lista dela (ativo e aceito). Nasce como `declarado`, ligado ao indicador, e só pode ser fechada depois que ele confirmar no painel (`indicator_answer_declared`). Recusa telefone de cliente que já tem indicação em andamento. Registro vai para a auditoria (`REGISTRO_EMPRESA`).
+- Testes: `supabase/tests/register_referral.sql`.
