@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { Card } from "@/components/ui";
 import { hasSupabase, supabaseBrowser } from "@/lib/supabase-browser";
@@ -19,6 +19,12 @@ export function CadastroEmpresa() {
   const [busy, setBusy] = useState(false);
   const [ok, setOk] = useState(false);
   const set = (k: keyof typeof f, v: string | boolean) => setF((p) => ({ ...p, [k]: v }));
+  const [plano, setPlano] = useState("");
+  useEffect(() => {
+    const p = new URLSearchParams(location.search).get("plan") ?? new URLSearchParams(location.search).get("plano");
+    const nomes: Record<string, string> = { mensal: "Mensal", semestral: "Semestral", anual: "Anual" };
+    if (p && nomes[p]) void Promise.resolve().then(() => setPlano(nomes[p]));
+  }, []);
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
@@ -27,7 +33,7 @@ export function CadastroEmpresa() {
     setErro(""); setBusy(true);
     const { error } = await supabaseBrowser().rpc("submit_company_signup", {
       p_company_name: f.name, p_legal_name: f.legal, p_cnpj: f.cnpj, p_contact_name: f.contact, p_email: f.email, p_phone: f.phone,
-      p_city: f.city, p_state: f.uf, p_segment: f.segment, p_message: f.message, p_consent: f.consent,
+      p_city: f.city, p_state: f.uf, p_segment: f.segment, p_message: [plano ? `Plano de interesse: ${plano}` : "", f.message].filter(Boolean).join("\n"), p_consent: f.consent,
     });
     setBusy(false);
     if (error) return setErro(error.message);
@@ -47,6 +53,7 @@ export function CadastroEmpresa() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Cadastre sua empresa no Indiki+</h1>
         <p className="mt-1 text-sm text-muted">Seus clientes indicam amigos, você vende mais e só paga comissão sobre venda fechada. Envie os dados e entraremos em contato.</p>
+        {plano && <p className="mt-2 inline-block rounded-full bg-brand-soft px-3 py-1 text-sm font-medium">Plano escolhido: {plano}</p>}
       </div>
       <Card className="space-y-4">
         <h2 className="font-semibold">Empresa</h2>

@@ -2,11 +2,11 @@
 
 /* Valores padrão; o layout sobrescreve com a identidade vinda do banco (brand_settings). */
 :root {
-  --brand: #0f766e;
+  --brand: #0a0a0a;
   --brand-fg: #ffffff;
-  --accent: #f59e0b;
-  --surface: #f8fafc;
-  --ink: #0f172a;
+  --accent: #ff6600;
+  --surface: #fafafa;
+  --ink: #0a0a0a;
   --radius: 12px;
 }
 
@@ -21,7 +21,7 @@
   --color-muted: color-mix(in srgb, var(--ink) 68%, white);
   --color-line: color-mix(in srgb, var(--ink) 14%, white);
   --radius-brand: var(--radius);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-display: ui-rounded, "SF Pro Rounded", "Hiragino Maru Gothic ProN", "Segoe UI", system-ui, sans-serif;
 }
 
@@ -34,7 +34,7 @@ html {
 body {
   background: var(--surface);
   color: var(--ink);
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   line-height: 1.6;
 }
 

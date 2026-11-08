@@ -1,411 +1,297 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  BadgeCheck,
-  Briefcase,
-  ChevronDown,
-  Eye,
-  GraduationCap,
-  Hammer,
-  Building2,
-  UserRound,
-  Ruler,
-  TrendingUp,
-  HeartPulse,
-  Link2,
-  LockKeyhole,
-  PiggyBank,
-  Plug,
-  Receipt,
-  Sofa,
-  Sparkles,
-  Users,
-  Wallet,
+  ArrowRight, BadgeCheck, BarChart3, Check, ClipboardList, Heart, Link2, Megaphone, Settings2, ShieldCheck,
+  TrendingUp, Users, Wallet, X,
 } from "lucide-react";
 import { getBrand } from "@/lib/brand";
-import { StageProgress } from "@/components/StageProgress";
 import { Logo } from "@/components/Logo";
+import { StageProgress } from "@/components/StageProgress";
 import lion from "@/public/brand/leao.png";
 
-const STEPS = [
-  {
-    icon: UserRound,
-    title: "Cadastre-se",
-    text: "Receba um link exclusivo para indicar. É grátis.",
-  },
-  {
-    icon: Link2,
-    title: "Compartilhe",
-    text: "Mande pelo WhatsApp para amigos, clientes e parceiros.",
-  },
-  {
-    icon: Eye,
-    title: "Acompanhe",
-    text: "Veja quem pediu orçamento e em que etapa cada indicação está.",
-  },
-  {
-    icon: Wallet,
-    title: "Ganhe",
-    text: "Venda concluída e paga? A comissão é liberada para você.",
-  },
-];
+export const metadata = { title: { absolute: "Indiki+ | Indicações: sua maior força de vendas" } };
 
-const WHO = [
-  {
-    icon: Ruler,
-    title: "Profissionais",
-    text: "Arquitetos, designers e outros profissionais ganham comissão ao recomendar produtos e serviços em que confiam.",
-  },
-  {
-    icon: HeartPulse,
-    title: "Clientes",
-    text: "Quem já comprou e gostou indica o que usa e é recompensado com comissão ou benefícios.",
-  },
-  {
-    icon: Building2,
-    title: "Empresas",
-    text: "Criam uma rede de promotores engajados e pagam só quando a venda acontece.",
-  },
+/** Preços públicos (mesmos do site piloto). Para mudar, altere aqui. */
+const PRECOS = [
+  { id: "mensal", nome: "Mensal", mes: 397, total: null, economia: null, destaque: false, cta: "Quero entrar no Indiki+" },
+  { id: "semestral", nome: "Semestral", mes: 297, total: 1782, economia: 600, destaque: false, cta: "Quero entrar no Indiki+" },
+  { id: "anual", nome: "Anual", mes: 197, total: 2364, economia: 2400, destaque: true, cta: "Criar meu programa de indicação" },
+] as const;
+const INCLUSO = [
+  "Programa de indicação completo", "Link e código único para cada indicador", "Rastreamento automático das indicações",
+  "Painel em tempo real", "Cálculo e gestão das comissões", "Área exclusiva para os indicadores", "Relatórios de desempenho",
 ];
+const brl0 = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
-const FOR_YOU = [
-  { icon: PiggyBank, title: "Indicar não custa nada", text: "Você não paga para participar." },
-  { icon: Eye, title: "Você vê cada etapa", text: "Sabe se pediram orçamento, se fechou e quando sai o pagamento." },
-  { icon: Receipt, title: "Receba por PIX", text: "Informe sua chave uma vez. As recompensas são pagas todo último dia do mês." },
-  { icon: LockKeyhole, title: "Privacidade de quem você indica", text: "Você vê só o primeiro nome. Endereço e valores ficam entre o amigo e a empresa." },
-];
-
-const FOR_COMPANIES = [
-  { icon: TrendingUp, title: "Mais vendas, de forma orgânica", text: "Cada profissional ou cliente vira um canal de venda, e indicação converte mais do que anúncio." },
-  { icon: Plug, title: "Menos trabalho manual", text: "O sistema rastreia a indicação e organiza o pagamento da recompensa. Depois conectamos ao sistema que você já usa." },
-  { icon: Users, title: "Clientes que viram embaixadores", text: "Reconhecer quem indica fideliza e faz a rede crescer sozinha." },
-  { icon: BadgeCheck, title: "Transparência total", text: "Painel com quem indicou, o que foi vendido e quanto foi gerado." },
-];
-
-const NICHES = [
-  { icon: Hammer, label: "Reformas e construção" },
-  { icon: Sofa, label: "Casa e decoração" },
-  { icon: HeartPulse, label: "Saúde e bem-estar" },
-  { icon: Sparkles, label: "Beleza e estética" },
-  { icon: GraduationCap, label: "Cursos e educação" },
-  { icon: Briefcase, label: "Serviços profissionais" },
-];
-
-const FAQ = [
-  {
-    q: "Quanto custa para indicar?",
-    a: "Nada. Criar a conta e indicar é gratuito.",
-  },
-  {
-    q: "Preciso ser cliente de alguma empresa?",
-    a: "Não. Clientes indicam o que usam e gostam, e profissionais como arquitetos e designers indicam produtos e serviços em que confiam. Basta criar a conta, que é gratuita.",
-  },
-  {
-    q: "Posso indicar mais de uma empresa?",
-    a: "Pode. Se você é cliente de duas empresas parceiras, tem um link para cada uma e um só painel. Cada indicação e cada comissão mostra de qual empresa vem, e você recebe tudo junto, no mesmo pagamento.",
-  },
-  {
-    q: "E se meu amigo não usar o meu link?",
-    a: "Sem problema. Ao pedir o orçamento, ele diz que foi indicado por você, com seu nome e telefone. Você recebe um aviso para confirmar. Sem a sua confirmação, a indicação não vale.",
-  },
-  {
-    q: "Quando recebo a comissão?",
-    a: "Depois que a venda do seu amigo for concluída e paga. As recompensas são pagas todo último dia do mês, e você acompanha tudo no painel.",
-  },
-  {
-    q: "Como recebo o dinheiro?",
-    a: "Por PIX, na chave que você cadastrar. Quando cair na conta, você confirma no painel. Se não caiu, é só avisar ali mesmo.",
-  },
-  {
-    q: "Quanto a empresa paga ao Indiki+?",
-    a: "Apenas 1% sobre as vendas já realizadas por indicação. Sem venda, sem custo.",
-  },
-  {
-    q: "Meus dados e os do meu amigo ficam seguros?",
-    a: "Guardamos o mínimo necessário e pedimos o consentimento de quem pede orçamento. Quem indica vê só o primeiro nome do amigo.",
-  },
-];
-
-const btnPrimary =
-  "inline-flex min-h-12 items-center justify-center rounded-full bg-accent px-7 py-3 text-base font-bold text-ink shadow-sm hover:brightness-95";
-const btnSecondary =
-  "inline-flex min-h-12 items-center justify-center rounded-full border-2 border-brand px-7 py-3 text-base font-semibold text-brand hover:bg-brand-soft";
+const laranja = "inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#ff6600] px-7 py-3 text-base font-bold text-white shadow-[0_10px_30px_-10px_rgba(255,102,0,0.7)] transition hover:bg-[#e65c00] focus-visible:outline-offset-4";
+const preto = "inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0a0a0a] px-7 py-3 text-base font-bold text-white transition hover:bg-black/80";
+const selo = "inline-block rounded-full bg-[#ff6600] px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-white";
 
 export default async function Home() {
   const brand = await getBrand();
-
   return (
-    <>
-      <a
-        href="#conteudo"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-brand focus:bg-white focus:px-4 focus:py-2"
-      >
-        Pular para o conteúdo
-      </a>
-
-      <header className="border-b border-line bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3">
-          <Link href="/" aria-label={`${brand.name}, página inicial`}>
-            <Logo name={brand.name} logoUrl={brand.logoUrl} height={34} />
-          </Link>
-          <nav aria-label="Seções da página" className="hidden items-center gap-6 text-base font-medium md:flex">
-            <a href="#como-funciona" className="hover:text-brand">Como funciona</a>
-            <a href="#para-voce" className="hover:text-brand">Para quem indica</a>
-            <a href="#empresas" className="hover:text-brand">Para empresas</a>
-            <a href="#perguntas" className="hover:text-brand">Perguntas</a>
+    <div className="bg-white text-[#0a0a0a]">
+      {/* Cabeçalho */}
+      <header className="sticky top-0 z-30 border-b border-black/5 bg-white/90 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
+          <Link href="/" aria-label={brand.name}><Logo name={brand.name} logoUrl={brand.logoUrl} height={26} /></Link>
+          <nav aria-label="Seções" className="hidden rounded-full border border-black/10 px-2 py-1 text-sm font-medium text-black/70 md:block">
+            {[["#como-funciona", "Como funciona"], ["#resultados", "Resultados"], ["#recursos", "Recursos"], ["#precos", "Preços"]].map(([h, l]) => (
+              <a key={h} href={h} className="inline-block rounded-full px-4 py-1.5 hover:text-black">{l}</a>
+            ))}
           </nav>
-          <Link href="/entrar" className={`${btnSecondary} min-h-11 px-5 py-2`}>
-            Entrar
-          </Link>
+          <Link href="/entrar" className="rounded-full bg-[#ff6600] px-5 py-2 text-sm font-bold text-white shadow-[0_8px_20px_-8px_rgba(255,102,0,0.8)] hover:bg-[#e65c00]">Login</Link>
         </div>
       </header>
 
-      <main id="conteudo">
-        {/* Abertura: a conversa entre vizinhos é o coração do produto */}
-        <section className="relative overflow-hidden bg-white">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 opacity-60 [background-image:radial-gradient(var(--accent)_2px,transparent_2.5px)] [background-size:16px_16px] [mask-image:radial-gradient(circle_at_70%_30%,black,transparent_70%)]"
-          />
-          <div className="relative mx-auto grid max-w-6xl items-center gap-8 px-5 pt-12 lg:grid-cols-[1.1fr_0.9fr] lg:pt-16">
-            <div className="pb-12 lg:pb-20">
-              <p className="text-lg font-bold text-brand">Indique | Acompanhe | Ganhe</p>
-              <h1 className="mt-3 font-display text-[clamp(2.5rem,6vw,4.25rem)] font-extrabold leading-[1.05] tracking-tight text-brand">
-                Transforme suas indicações em conquistas reais.
+      <main>
+        {/* Hero */}
+        <section className="overflow-hidden bg-gradient-to-b from-[#fff8f3] to-white">
+          <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 pb-12 pt-10 md:grid-cols-[1.1fr_1fr] md:pt-16">
+            <div>
+              <span className="inline-block rounded-full bg-black/5 px-4 py-1.5 text-sm font-semibold">Crescimento com quem já confia em você</span>
+              <h1 className="mt-5 text-[2.6rem] font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-[4.2rem]">
+                Transforme as <span className="text-[#ff6600]">indicações boca a boca</span> na sua <span className="text-[#ff6600]">Maior Força de Vendas.</span>
               </h1>
-              <p className="mt-5 max-w-[34rem] text-xl leading-relaxed">
-                Gostou do serviço de uma empresa e indicou para um vizinho? Se ele fechar, você
-                ganha uma comissão. Simples, automático e transparente.
+              <p className="mt-6 max-w-xl text-lg text-black/60">
+                Seus clientes indicam amigos, você recebe pedidos de orçamento prontos para fechar e só paga comissão sobre venda fechada. Sem depender de anúncios.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/cadastro" className={btnPrimary}>
-                  Quero indicar e ganhar
-                </Link>
-                <Link href="/cadastro-empresa" className={btnSecondary}>
-                  Tenho uma empresa
-                </Link>
+                <a href="#precos" className={laranja}>Começar agora</a>
+                <a href="#como-funciona" className={preto}>Ver como funciona</a>
               </div>
-              <p className="mt-4 text-base text-muted">
-                Cadastro gratuito. Escolha as empresas que você conhece ou use o convite que uma empresa te mandou.
+              <p className="mt-5 text-sm text-black/60">
+                Quer indicar e ganhar? <Link href="/cadastro" className="font-semibold text-[#ff6600] underline underline-offset-4">Cadastre-se como indicador</Link>
               </p>
             </div>
-
-            <div className="relative mx-auto w-full max-w-sm self-end lg:max-w-md">
-              <div aria-hidden className="absolute inset-x-[-8%] bottom-0 top-[18%] rounded-t-full bg-gradient-to-b from-accent to-accent/10" />
-              <Image src={lion} alt="Leão, mascote do Indiki+, de braços cruzados" priority className="relative h-auto w-full" sizes="(min-width:1024px) 440px, 90vw" />
-              <div className="absolute -left-2 bottom-8 flex max-w-[15rem] items-center gap-3 rounded-2xl border-2 border-accent bg-white px-4 py-3 shadow-md sm:-left-10">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-accent/25">
-                  <Wallet size={22} aria-hidden />
-                </span>
-                <p className="text-sm leading-snug">
-                  <strong className="block text-base">Comissão liberada</strong>
-                  <span className="text-muted">Exemplo ilustrativo</span>
-                </p>
+            <div className="relative mx-auto w-full max-w-md">
+              <div aria-hidden className="absolute inset-x-6 bottom-6 top-16 rounded-[2.5rem] bg-[#ff6600]/10" />
+              <Image src={lion} alt="Diki, o leão do Indiki+, de braços cruzados com a camiseta da marca" priority className="relative mx-auto h-auto w-[78%] drop-shadow-xl" />
+              <div className="absolute bottom-10 left-0 w-56 rounded-2xl bg-white p-3 text-sm shadow-xl ring-1 ring-black/5">
+                <p className="text-xs text-black/50">Nova indicação</p>
+                <p className="font-semibold">Ana pediu orçamento</p>
+                <p className="text-xs text-black/50">indicada por Maria · Box de banheiro</p>
+              </div>
+              <div className="absolute right-0 top-24 rounded-2xl bg-[#0a0a0a] px-4 py-3 text-white shadow-xl">
+                <p className="text-xs text-white/60">Comissão liberada</p>
+                <p className="text-lg font-bold text-[#ff8a3d]">R$ 300,00</p>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="bg-brand-soft">
-          <div className="mx-auto grid max-w-6xl items-center gap-6 px-5 py-12 md:grid-cols-[1fr_auto]">
-            <div>
-              <h2 className="font-display text-2xl font-bold tracking-tight text-brand md:text-3xl">
-                Você já pensou no poder das indicações?
-              </h2>
-              <p className="mt-3 max-w-[40rem] text-lg leading-relaxed">
-                Segundo o material do Indiki+, 90% das pessoas confiam mais em recomendações de
-                amigos ou profissionais do que em propaganda comum. E se cada recomendação sua fosse
-                recompensada?
-              </p>
-            </div>
-            <p className="font-display text-xl font-bold text-brand md:text-right">
-              Chegou a hora de valorizar<br />o que você indica.
-            </p>
-          </div>
-        </section>
-
-        <section id="como-funciona" className="scroll-mt-4 bg-white">
-          <div className="mx-auto max-w-6xl px-5 py-16">
-            <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
-              Como funciona, em quatro passos
-            </h2>
-            <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {STEPS.map(({ icon: Icon, title, text }, i) => (
-                <li key={title} className="rounded-brand border border-line p-6">
-                  <div className="flex items-center gap-3">
-                    <span className="grid h-10 w-10 place-items-center rounded-full bg-brand text-lg font-bold text-brand-fg">
-                      {i + 1}
-                    </span>
-                    <Icon size={28} className="text-brand" aria-hidden />
+        {/* Benefícios */}
+        <section className="bg-gradient-to-b from-white to-[#fff6ef] py-16">
+          <div className="mx-auto max-w-6xl px-4 text-center">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">É hora de ativar sua maior força de vendas.</h2>
+            <p className="mx-auto mt-4 max-w-2xl text-black/60">Com o marketing de indicação, você cresce com benefícios que a publicidade tradicional não alcança.</p>
+            <div className="mt-10 grid gap-6 md:grid-cols-3">
+              {[
+                [Check, "Baixo custo", "Você só paga comissão quando a indicação vira venda fechada."],
+                [Heart, "Fidelização", "Quem chega indicado já confia na sua empresa e costuma ficar mais tempo."],
+                [TrendingUp, "Mais vendas", "Cada cliente satisfeito vira um vendedor que traz amigos com a mesma necessidade."],
+              ].map(([Icon, t, d]) => {
+                const I = Icon as typeof Check;
+                return (
+                  <div key={t as string} className="rounded-3xl bg-white p-8 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.15)]">
+                    <span className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-br from-[#ff6600] to-[#ff9248] text-white"><I size={30} aria-hidden /></span>
+                    <h3 className="mt-6 text-lg font-bold">{t as string}</h3>
+                    <p className="mt-2 text-black/60">{d as string}</p>
                   </div>
-                  <h3 className="mt-4 text-xl font-bold leading-snug">{title}</h3>
-                  <p className="mt-2 text-base leading-relaxed text-muted">{text}</p>
-                </li>
-              ))}
-            </ol>
+                );
+              })}
+            </div>
           </div>
         </section>
 
-        <section className="bg-brand text-brand-fg">
-          <div className="mx-auto max-w-6xl px-5 py-16">
-            <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
-              Quem pode usar o Indiki+
-            </h2>
-            <p className="mt-3 max-w-[40rem] text-lg opacity-90">No Indiki+ todo mundo sai ganhando.</p>
-            <ul className="mt-10 grid gap-6 md:grid-cols-3">
-              {WHO.map(({ icon: Icon, title, text }) => (
-                <li key={title} className="rounded-brand bg-white/10 p-6 ring-1 ring-white/20">
-                  <span className="grid h-12 w-12 place-items-center rounded-full bg-accent text-ink">
-                    <Icon size={26} aria-hidden />
-                  </span>
-                  <h3 className="mt-4 text-xl font-bold">{title}</h3>
-                  <p className="mt-2 text-base leading-relaxed opacity-90">{text}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <section id="para-voce" className="scroll-mt-4 bg-surface">
-          <div className="mx-auto grid max-w-6xl gap-12 px-5 py-16 lg:grid-cols-2">
-            <div>
-              <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
-                Para quem indica: tudo à vista no celular
-              </h2>
-              <p className="mt-4 max-w-[34rem] text-lg leading-relaxed">
-                Você não precisa perguntar para ninguém como anda a indicação. Cada passo aparece
-                no seu painel.
-              </p>
-              <ul className="mt-8 space-y-5">
-                {FOR_YOU.map(({ icon: Icon, title, text }) => (
-                  <li key={title} className="flex gap-4">
-                    <span className="grid h-12 w-12 shrink-0 place-items-center rounded-brand bg-brand-soft text-brand">
-                      <Icon size={24} aria-hidden />
-                    </span>
-                    <div>
-                      <h3 className="text-lg font-bold">{title}</h3>
-                      <p className="text-base leading-relaxed text-muted">{text}</p>
+        {/* Como funciona */}
+        <section id="como-funciona" className="scroll-mt-20 bg-[#f8f8f8] py-20">
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="text-center">
+              <span className={selo}>Nosso processo em 3 passos</span>
+              <h2 className="mt-5 text-3xl font-bold tracking-tight text-[#ff6600] sm:text-5xl">A forma inteligente de crescer. Veja como funciona.</h2>
+            </div>
+            <ol className="mt-14 space-y-16">
+              <Passo n={1} titulo="Monte seu programa em minutos" texto="Cadastre os produtos que podem ser indicados e quanto o indicador ganha em cada um: valor fixo, porcentagem do contrato ou os dois, com teto se quiser.">
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-black/50">Produtos</p>
+                  {[["Envidraçamento de sacada", "R$ 300,00 por venda"], ["Box de banheiro", "2% do contrato (teto R$ 800)"], ["Guarda-corpo", "R$ 100 + 1% do contrato"]].map(([p, r]) => (
+                    <div key={p} className="flex items-center justify-between gap-3 rounded-2xl border border-black/5 bg-white p-4 shadow-sm">
+                      <span className="font-semibold">{p}</span><span className="rounded-full bg-[#fff1e8] px-3 py-1 text-sm font-medium text-[#c24d00]">{r}</span>
                     </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
+                  ))}
+                </div>
+              </Passo>
+              <Passo n={2} invertido titulo="Receba pedidos dos amigos dos seus clientes" texto="Cada cliente recebe um link e um código só dele. O amigo pede orçamento pelo link e o pedido chega no seu painel já com quem indicou. Se o amigo procurar a loja direto, você registra em segundos.">
+                <div className="space-y-3">
+                  {[["Ana Paula", "indicada por Maria", "Nova"], ["Carlos Dias", "indicado por Bruno", "Orçamento"], ["Bia Lopes", "indicada por Maria", "Fechou"]].map(([n, q, e]) => (
+                    <div key={n} className="flex items-center justify-between gap-3 rounded-2xl border border-black/5 bg-white p-4 shadow-sm">
+                      <span><span className="block font-semibold">{n}</span><span className="text-sm text-black/50">{q}</span></span>
+                      <span className={`rounded-full px-3 py-1 text-xs font-bold ${e === "Fechou" ? "bg-[#0a0a0a] text-white" : "bg-[#fff1e8] text-[#c24d00]"}`}>{e}</span>
+                    </div>
+                  ))}
+                </div>
+              </Passo>
+              <Passo n={3} titulo="Multiplique suas vendas" texto="Você avança cada pedido até a venda. A comissão é calculada sozinha pela regra do produto e o Indiki+ cuida de pagar os indicadores por PIX no fim do mês.">
+                <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
+                  <p className="font-semibold">Bia Lopes · Envidraçamento de sacada</p>
+                  <div className="mt-4"><StageProgress stage="fechou" /></div>
+                  <p className="mt-4 rounded-xl bg-[#fff1e8] px-4 py-2 text-sm">Comissão de Maria: <strong>R$ 300,00</strong>, liberada após a instalação</p>
+                </div>
+              </Passo>
+            </ol>
+            <div className="mt-14 text-center"><a href="#precos" className={laranja}>Começar agora</a></div>
+          </div>
+        </section>
 
-            <figure className="self-center">
-              <div className="rounded-brand border border-line bg-white p-5 shadow-sm">
-                <p className="font-bold">Carlos M.</p>
-                <p className="mb-4 text-sm text-muted">Envidraçamento de sacada</p>
-                <StageProgress stage="fechou" />
-                <p className="mt-3 text-sm text-muted">Você pode acompanhar indicações de várias empresas no mesmo painel, cada uma com seu link e sua comissão.</p>
+        {/* Transformação */}
+        <section id="resultados" className="scroll-mt-20 py-20">
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="text-center">
+              <span className={selo}>A transformação na prática</span>
+              <h2 className="mt-5 text-3xl font-bold tracking-tight text-[#ff6600] sm:text-5xl">A diferença entre fazer na mão e usar a ferramenta certa.</h2>
+            </div>
+            <div className="mt-12 grid gap-6 md:grid-cols-2">
+              <div className="rounded-3xl border-2 border-black/10 bg-[#f8f8f8] p-8">
+                <p className="flex items-center gap-2 text-sm text-black/60"><span className="h-2.5 w-2.5 rounded-full bg-red-500" aria-hidden /> Gerenciando sem o Indiki+</p>
+                <h3 className="mt-4 text-2xl font-bold">Complicado, manual e cheio de erros.</h3>
+                <ul className="mt-6 space-y-4">
+                  {[["Perder o controle", "de quem indicou em planilhas e conversas soltas."], ["Calcular e pagar comissões", "na mão, com risco de erro e atraso."], ["Falta de visibilidade", "para o cliente sobre o andamento do que ele indicou."]].map(([b, t]) => (
+                    <li key={b} className="flex gap-3"><span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-red-100 text-red-600"><X size={14} aria-hidden /></span><span><strong>{b}</strong> <span className="text-black/60">{t}</span></span></li>
+                  ))}
+                </ul>
               </div>
-              <figcaption className="mt-3 text-center text-sm text-muted">
-                Exemplo de como você acompanha uma indicação
-              </figcaption>
-            </figure>
+              <div className="rounded-3xl bg-[#ff6600] p-8 text-white shadow-[0_20px_50px_-20px_rgba(255,102,0,0.8)]">
+                <p className="flex items-center gap-2 text-sm text-white/85"><span className="h-2.5 w-2.5 rounded-full bg-white" aria-hidden /> Crescendo com o Indiki+</p>
+                <h3 className="mt-4 text-2xl font-bold">Automatizado, transparente e eficiente.</h3>
+                <ul className="mt-6 space-y-4">
+                  {[["Painel central", "que acompanha cada indicação, do pedido à venda."], ["Comissão automática:", "você define a regra e a plataforma calcula."], ["Área exclusiva para os indicadores:", "eles acompanham as indicações e o que têm a receber."]].map(([b, t]) => (
+                    <li key={b} className="flex gap-3"><span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/25"><Check size={14} aria-hidden /></span><span><strong>{b}</strong> <span className="text-white/85">{t}</span></span></li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-16 grid gap-6 md:grid-cols-2">
+              <div className="rounded-3xl border border-black/10 p-8">
+                <Megaphone className="text-black/40" aria-hidden />
+                <h3 className="mt-3 text-xl font-bold">Anúncios: o caminho caro e incerto</h3>
+                <ul className="mt-4 space-y-2 text-black/60">
+                  {["Custo por clique que só sobe", "Contatos frios, que ainda não conhecem você", "Dependência das plataformas", "Você paga mesmo quando não vende"].map((t) => <li key={t} className="flex gap-2"><X size={18} className="mt-0.5 shrink-0 text-red-500" aria-hidden />{t}</li>)}
+                </ul>
+              </div>
+              <div className="rounded-3xl border-2 border-[#ff6600] bg-[#fff8f3] p-8">
+                <Users className="text-[#ff6600]" aria-hidden />
+                <h3 className="mt-3 text-xl font-bold">Indicações: o caminho inteligente</h3>
+                <ul className="mt-4 space-y-2">
+                  {["Contatos que já chegam com confiança", "Crescimento sustentável, com quem já é cliente", "Custo só sobre venda fechada", "Clientes viram parceiros da sua marca"].map((t) => <li key={t} className="flex gap-2"><Check size={18} className="mt-0.5 shrink-0 text-[#ff6600]" aria-hidden />{t}</li>)}
+                </ul>
+              </div>
+            </div>
           </div>
         </section>
 
-        <section id="empresas" className="scroll-mt-4 bg-white">
-          <div className="mx-auto max-w-6xl px-5 py-16">
-            <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
-              Para empresas: clientes satisfeitos viram sua equipe de vendas
-            </h2>
-            <p className="mt-4 max-w-[40rem] text-lg leading-relaxed">
-              Quem já comprou de você é a melhor propaganda. Com o Indiki+, você premia essa
-              recomendação e acompanha tudo, sem planilha.
-            </p>
-            <ul className="mt-10 grid gap-6 sm:grid-cols-2">
-              {FOR_COMPANIES.map(({ icon: Icon, title, text }) => (
-                <li key={title} className="flex gap-4 rounded-brand border border-line p-6">
-                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-brand bg-brand text-brand-fg">
-                    <Icon size={24} aria-hidden />
-                  </span>
-                  <div>
-                    <h3 className="text-lg font-bold">{title}</h3>
-                    <p className="mt-1 text-base leading-relaxed text-muted">{text}</p>
+        {/* Recursos */}
+        <section id="recursos" className="scroll-mt-20 bg-[#0a0a0a] py-20 text-white">
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="text-center">
+              <span className={selo}>Recursos</span>
+              <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-5xl">A solução completa para o seu negócio.</h2>
+            </div>
+            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                [Settings2, "Regra por produto", "Valor fixo, porcentagem ou os dois, com teto. Mudou a regra? Vale só para as próximas indicações."],
+                [Link2, "Link e código únicos", "Cada indicador tem o seu, para mandar no WhatsApp com um toque."],
+                [ClipboardList, "Funil das indicações", "Novas, orçamento, fechadas e instaladas, com aviso de cliente repetido."],
+                [Wallet, "Comissões sem planilha", "Calculadas na hora de fechar e pagas aos indicadores por PIX pelo Indiki+."],
+                [BadgeCheck, "Você aprova quem indica", "Convite por link, cadastro manual ou pedidos pelo site, com a sua aprovação."],
+                [BarChart3, "Painel para o indicador", "Ele vê cada indicação, quanto tem a receber e quando, sem precisar te perguntar."],
+              ].map(([Icon, t, d]) => {
+                const I = Icon as typeof Check;
+                return (
+                  <div key={t as string} className="rounded-3xl bg-white/5 p-7 ring-1 ring-white/10">
+                    <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#ff6600]"><I size={22} aria-hidden /></span>
+                    <h3 className="mt-5 text-lg font-bold">{t as string}</h3>
+                    <p className="mt-2 text-white/65">{d as string}</p>
                   </div>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-8 flex flex-wrap items-center gap-5 rounded-brand bg-brand p-6 text-brand-fg">
-              <p className="font-display text-6xl font-extrabold leading-none text-accent">1%</p>
-              <p className="max-w-md text-lg leading-snug">
-                é tudo o que a empresa paga ao Indiki+, só sobre vendas já realizadas por indicação.
-                Sem venda, sem custo.
-              </p>
+                );
+              })}
             </div>
           </div>
         </section>
 
-        <section className="bg-brand-soft">
-          <div className="mx-auto max-w-6xl px-5 py-16">
-            <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
-              Serve para qualquer negócio que vive de recomendação
-            </h2>
-            <ul className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3">
-              {NICHES.map(({ icon: Icon, label }) => (
-                <li
-                  key={label}
-                  className="flex items-center gap-3 rounded-brand bg-white p-4 ring-1 ring-line md:p-5"
-                >
-                  <Icon size={28} className="shrink-0 text-brand" aria-hidden />
-                  <span className="text-base font-semibold leading-snug md:text-lg">{label}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <section id="perguntas" className="scroll-mt-4 bg-white">
-          <div className="mx-auto max-w-3xl px-5 py-16">
-            <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
-              Perguntas que todo mundo faz
-            </h2>
-            <div className="mt-8 divide-y divide-line border-y border-line">
-              {FAQ.map(({ q, a }) => (
-                <details key={q} className="group py-1">
-                  <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-3 text-lg font-semibold [&::-webkit-details-marker]:hidden">
-                    {q}
-                    <ChevronDown
-                      size={22}
-                      className="shrink-0 text-brand transition-transform group-open:rotate-180"
-                      aria-hidden
-                    />
-                  </summary>
-                  <p className="pb-4 text-base leading-relaxed text-muted">{a}</p>
-                </details>
+        {/* Preços */}
+        <section id="precos" className="scroll-mt-20 bg-gradient-to-b from-[#fff8f3] to-white py-20">
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">Escolha o plano ideal para o seu negócio.</h2>
+              <p className="mt-4 text-black/60">Todos os planos têm acesso completo à plataforma.</p>
+            </div>
+            <div className="mt-12 grid items-stretch gap-6 md:grid-cols-3">
+              {PRECOS.map((p) => (
+                <div key={p.id} className={`relative flex flex-col rounded-3xl p-8 ${p.destaque ? "bg-[#0a0a0a] text-white shadow-2xl md:-my-4 md:py-12" : "bg-white shadow-[0_10px_40px_-15px_rgba(0,0,0,0.2)]"}`}>
+                  {p.destaque && <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#ff6600] px-4 py-1 text-xs font-bold uppercase text-white">Mais popular · -50%</span>}
+                  <h3 className="text-xl font-bold">{p.nome}</h3>
+                  <p className="mt-4"><span className="text-5xl font-bold tracking-tight">{brl0(p.mes)}</span><span className={p.destaque ? "text-white/60" : "text-black/50"}>/mês</span></p>
+                  <p className={`mt-1 min-h-10 text-sm ${p.destaque ? "text-white/70" : "text-black/60"}`}>
+                    {p.total ? <>Total de {brl0(p.total)} · economia de <strong className="text-[#ff6600]">{brl0(p.economia!)}</strong></> : "Sem fidelidade"}
+                  </p>
+                  <ul className="mt-6 space-y-2.5 text-sm">
+                    {INCLUSO.map((i) => <li key={i} className="flex gap-2"><Check size={18} className="shrink-0 text-[#ff6600]" aria-hidden />{i}</li>)}
+                  </ul>
+                  <Link href={`/cadastro-empresa?plano=${p.id}`} className={`${p.destaque ? laranja : preto} mt-8 w-full text-center`}>{p.cta}</Link>
+                </div>
               ))}
             </div>
+            <p className="mx-auto mt-10 flex max-w-2xl items-center justify-center gap-2 text-center text-sm text-black/60"><ShieldCheck size={18} className="shrink-0 text-[#ff6600]" aria-hidden /> Você envia o pedido, nossa equipe entra em contato e libera o acesso da sua empresa.</p>
           </div>
         </section>
 
-        <section className="bg-brand text-brand-fg">
-          <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-5 py-14 md:flex-row md:items-center md:justify-between">
-            <h2 className="font-display text-3xl font-bold tracking-tight md:max-w-xl md:text-4xl">
-              Pronto para transformar indicações em oportunidades? Cadastre-se e comece a ganhar.
-            </h2>
-            <Link
-              href="/cadastro"
-              className="inline-flex min-h-12 items-center justify-center rounded-full bg-accent px-7 py-3 text-base font-bold text-ink hover:brightness-95"
-            >
-              Entrar para indicar
-            </Link>
+        {/* Indicadores */}
+        <section className="px-4 py-16">
+          <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 rounded-3xl bg-[#f8f8f8] px-6 py-12 text-center md:flex-row md:text-left">
+            <div className="flex-1">
+              <h2 className="text-2xl font-bold sm:text-3xl">Você conhece boas empresas? Indique e ganhe.</h2>
+              <p className="mt-2 text-black/60">Cadastre-se de graça, escolha as empresas parceiras e receba comissão por PIX a cada venda fechada.</p>
+            </div>
+            <Link href="/cadastro" className={preto}>Quero indicar <ArrowRight size={18} aria-hidden /></Link>
+          </div>
+        </section>
+
+        {/* CTA final */}
+        <section className="bg-[#ff6600] py-20 text-white">
+          <div className="mx-auto max-w-4xl px-4 text-center">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">Pare de queimar dinheiro com anúncios. Cresça com indicações.</h2>
+            <a href="#precos" className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-[#0a0a0a] px-8 py-3 text-base font-bold text-white hover:bg-black/80">Começar agora</a>
           </div>
         </section>
       </main>
 
-      <footer className="bg-white">
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-8 text-sm text-muted md:flex-row md:items-center md:justify-between">
-          <p>
-            <strong className="text-ink">{brand.name}</strong>. Plataforma em fase de testes. www.indikimais.com.br
-          </p>
-          <nav aria-label="Rodapé" className="flex flex-wrap gap-x-6 gap-y-2">
-            <Link href="/entrar" className="hover:text-brand">Entrar</Link>
-            <Link href="/cadastro-empresa" className="hover:text-brand">Cadastrar minha empresa</Link>
-            <Link href="/termos" className="hover:text-brand">Termos e dados</Link>
+      <footer className="bg-[#0a0a0a] py-10 text-white/70">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-4 text-sm md:flex-row">
+          <p className="text-lg font-bold text-white">indiki<span className="text-[#ff6600]">+</span></p>
+          <nav aria-label="Rodapé" className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+            <Link href="/entrar" className="hover:text-white">Entrar</Link>
+            <Link href="/cadastro" className="hover:text-white">Quero indicar</Link>
+            <Link href="/cadastro-empresa" className="hover:text-white">Cadastrar minha empresa</Link>
+            <Link href="/termos" className="hover:text-white">Termos e dados</Link>
           </nav>
+          <p>© 2026 indiki+. Todos os direitos reservados.</p>
         </div>
       </footer>
-    </>
+    </div>
+  );
+}
+
+function Passo({ n, titulo, texto, invertido, children }: { n: number; titulo: string; texto: string; invertido?: boolean; children: React.ReactNode }) {
+  return (
+    <li className="grid items-center gap-8 md:grid-cols-2">
+      <div className={invertido ? "md:order-2" : ""}>
+        <p className="text-sm font-semibold uppercase tracking-wide text-black/50">Passo {n}</p>
+        <h3 className="mt-2 text-3xl font-bold tracking-tight text-[#ff6600] sm:text-4xl">{titulo}</h3>
+        <p className="mt-4 text-lg text-black/60">{texto}</p>
+      </div>
+      <div className={`rounded-3xl bg-[#f1f1f1] p-6 shadow-[0_20px_50px_-25px_rgba(0,0,0,0.35)] ${invertido ? "md:order-1" : ""}`}>{children}</div>
+    </li>
   );
 }

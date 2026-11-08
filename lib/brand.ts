@@ -15,14 +15,14 @@ export type Brand = {
 
 export const DEFAULT_BRAND: Brand = {
   name: "Indiki+",
-  tagline: "Indique, acompanhe e ganhe.",
+  tagline: "Indicações: sua maior força de vendas.",
   logoUrl: null,
-  primary: "#14385f",
+  primary: "#0a0a0a",
   primaryFg: "#ffffff",
-  accent: "#f7931e",
-  surface: "#f8fafc",
-  ink: "#10243e",
-  radiusPx: 12,
+  accent: "#ff6600",
+  surface: "#fafafa",
+  ink: "#0a0a0a",
+  radiusPx: 14,
 };
 
 const HEX = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;

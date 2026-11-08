@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { CSSProperties } from "react";
+import "@fontsource-variable/inter";
 import "./globals.css";
 import { brandCssVars, getBrand } from "@/lib/brand";
 import { EnvBanner } from "@/components/EnvBanner";
@@ -9,6 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: { default: brand.name, template: `%s · ${brand.name}` },
     description: brand.tagline,
+    other: { "theme-color": "#ff6600" },
   };
 }
 
