@@ -153,3 +153,11 @@ fechadas. Mudar de plano não altera vendas passadas. A visão `company_platform
 - Exceção: `admin_correct_referral_rule` (só admin do Indiki+, motivo obrigatório, só antes de a comissão ser liberada, com auditoria `CORRECAO_REGRA`).
 - Tela da empresa lê `company_offer_rule_history` (versões, quantas indicações cada uma tem e quantas estão em andamento).
 - Testes: `supabase/tests/rule_snapshot.sql`.
+
+## Migração 10: convite da empresa e cadastro completo do indicador
+
+- `company_invites`: um link por empresa (`/convite/CÓDIGO`). A empresa copia, pausa/reativa ou renova (o antigo morre; quem já entrou continua vinculado). Funções `company_invite_get/set_active/rotate`.
+- `invite_info(token)` é público e devolve só o nome da empresa e se o link vale.
+- `indicator_register(...)`: exige e-mail confirmado; valida nome completo, telefone, 18+ anos, cidade/UF, CPF, PIX (por tipo) e aceite dos termos; grava perfil + CPF (`indicator_tax_profiles`) e cria o vínculo (`referrer_links`) com o código na empresa. Adota um cadastro prévio feito pela empresa (mesmo e-mail ou telefone) em vez de duplicar. CPF em branco mantém o já cadastrado (entrar em outra empresa).
+- `indicator_my_profile`: o próprio cadastro, com CPF mascarado.
+- Testes: `supabase/tests/indicator_signup.sql`.

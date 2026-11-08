@@ -26,7 +26,7 @@ Testes locais: `supabase/tests/run_local.sh` (0 FAIL/ERROR na última rodada). D
 - Supabase Auth configurado: Site URL `https://indiquemais.vercel.app`; redirects `/auth/callback` na produção e em `localhost:3100`.
 
 ## Pendências
-1. Testar o login na produção com o e-mail admin.
+1. Testar o login na produção e o fluxo de convite (empresa copia o link, cliente se cadastra).
 2. Ligar as telas aos dados reais (Produtos, Indicações, Empresas, Planos, Cobrança), uma a uma.
 3. SMTP próprio (o padrão do Supabase limita e-mails por hora).
 4. Adicionar os endereços de teste e homologação da Vercel nos redirects do login, se for testar lá.
